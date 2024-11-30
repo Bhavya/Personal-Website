@@ -1,7 +1,7 @@
 import { SkillsCarousel } from '@/components/skills-carousel'
 import { Typography } from '@/components/typography'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { biography, education, experience } from '@/data'
+import { biography, experience } from '@/data'
 
 export const About = () => {
     return (
@@ -27,30 +27,16 @@ export const About = () => {
                 </p>
                 <p className="text-md text-muted-foreground">
                     Outside of work, I serve as a technical advisor for startups, mentor aspiring leaders, and explore
-                    the intersection of technology and creativity. I’m also working on a novel and co-developing a
+                    the intersection of technology and creativity. I&apos;m also working on a novel and co-developing a
                     horror game, channeling my love for storytelling and interactive design. Whether tackling complex
                     engineering challenges, shaping the future of tech, or creating immersive experiences, I strive to
                     bring curiosity, precision, and innovation to everything I do.
                 </p>
             </div>
 
-            {/* Education Section */}
-            <div className="flex flex-col space-y-6">
-                <Typography variant="h2">Education</Typography>
-                <div className="flex flex-col gap-3">
-                    {education.map((item) => (
-                        <div key={item.title} className="flex flex-col space-y-2 border-l-4 border-primary pl-4">
-                            <Typography variant="h3">{item.title}</Typography>
-                            <p className="text-md text-muted-foreground">{item.subtitle}</p>
-                            <p className="text-sm text-muted-foreground">{item.description}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
             {/* Work Experience Section */}
             <div className="flex flex-col space-y-6">
-                <Typography variant="h2">Work Experience</Typography>
+                <Typography variant="h2">Some Stuff I&apos;ve Worked On</Typography>
                 <div className="flex flex-col gap-3">
                     {experience.map((item) => (
                         <div key={item.title} className="flex flex-col space-y-2 border-l-4 border-primary pl-4">

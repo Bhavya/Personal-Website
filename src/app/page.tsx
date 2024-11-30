@@ -25,7 +25,7 @@ const HomePage = () => {
                         I&apos;m an Engineering Manager and technologist passionate about building resilient systems,
                         empowering teams, and delivering impactful solutions. At Chime, I lead high-performing teams,
                         and as the founder of{' '}
-                        <a href="www.oatproductivity.com" className="text-primary">
+                        <a href="https://oatproductivity.com/" className="text-primary">
                             Oat Productivity
                         </a>
                         , I create physical tools for organized thinking and goal management. Outside of work, I advise
