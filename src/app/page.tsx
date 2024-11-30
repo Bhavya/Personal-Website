@@ -18,7 +18,7 @@ const HomePage = () => {
                             variant="h1"
                             className="text-base sm:text-xl md:text-3xl lg:text-5xl font-bold leading-none tracking-tight"
                         >
-                            Hi, I&apos;m <span className="text-primary">BadEnd</span>
+                            Hi, I&apos;m <span className="text-primary">Bhavya</span>
                         </Typography>
                     </div>
                     <p className="text-md text-muted-foreground">

@@ -20,7 +20,7 @@ export const Projects = ({ featured }: ProjectsSectionProps) => {
                         <TooltipTrigger>View on GitHub</TooltipTrigger>
                         <TooltipContent aria-label="View on GitHub">
                             <NextLink
-                                href="https://github.com/BadEnd777"
+                                href="https://github.com/Bhavya"
                                 className="flex items-center space-x-2"
                                 target="_blank"
                                 aria-label="View on GitHub"

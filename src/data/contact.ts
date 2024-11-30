@@ -12,6 +12,6 @@ export const contact = [
     {
         icon: 'icon-[tabler--brand-mailgun]',
         label: 'Email',
-        link: 'mailto:badend777@proton.me',
+        link: 'mailto:Bhavya@proton.me',
     },
 ]

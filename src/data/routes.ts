@@ -1,7 +1,8 @@
 export const routes = [
     { path: '/', label: 'Home' },
-    { path: '/about', label: 'About' },
-    { path: '/projects', label: 'Projects' },
-    { path: '/blog', label: 'Blog' },
-    { path: '/contact', label: 'Contact' },
+    //{ path: '/about', label: 'About' },
+    { path: '/projects', label: 'Advising' },
+    { path: '/projects', label: 'Investing' },
+    { path: '/blog', label: 'Projects' },
+    { path: '/contact', label: 'Connect' },
 ]

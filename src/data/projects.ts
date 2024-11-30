@@ -19,7 +19,7 @@ export const projects = [
         image: '/images/projects/personal-website.webp',
         status: {
             text: 'View Source',
-            link: 'https://github.com/BadEnd777/Personal-Website',
+            link: 'https://github.com/Bhavya/Personal-Website',
             icon: 'icon-[tabler--arrow-right]',
         },
         isFeatured: true,
@@ -32,7 +32,7 @@ export const projects = [
         image: '/images/projects/chat-bridge.webp',
         status: {
             text: 'View Source',
-            link: 'https://github.com/BadEnd777/Chat-Bridge',
+            link: 'https://github.com/Bhavya/Chat-Bridge',
             icon: 'icon-[tabler--arrow-right]',
         },
         isFeatured: true,
@@ -44,7 +44,7 @@ export const projects = [
         image: '/images/projects/guard-env.webp',
         status: {
             text: 'View Source',
-            link: 'https://github.com/BadEnd777/guard-env',
+            link: 'https://github.com/Bhavya/guard-env',
             icon: 'icon-[tabler--arrow-right]',
         },
         note: 'In development',
@@ -56,7 +56,7 @@ export const projects = [
         image: '/images/projects/vrconnectivity-shield.webp',
         status: {
             text: 'View Source',
-            link: 'https://github.com/BadEnd777/VRConnectivity-Shield',
+            link: 'https://github.com/Bhavya/VRConnectivity-Shield',
             icon: 'icon-[tabler--arrow-right]',
         },
         isFeatured: true,
@@ -67,7 +67,7 @@ export const projects = [
         image: '/images/projects/tiktok-harbor.webp',
         status: {
             text: 'View Source',
-            link: 'https://github.com/BadEnd777/TikTok-Harbor',
+            link: 'https://github.com/Bhavya/TikTok-Harbor',
             icon: 'icon-[tabler--arrow-right]',
         },
         isFeatured: true,
