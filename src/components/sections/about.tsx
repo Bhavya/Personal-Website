@@ -9,14 +9,32 @@ export const About = () => {
             <Typography variant="h1" underline>
                 📝 About Me
             </Typography>
+
+            {/* Summary Section */}
             <div className="flex flex-col space-y-6">
                 <Typography variant="h2">Summary</Typography>
-                <p className="text-lg text-muted-foreground">
-                    Enthusiastic and results-driven freelance developer with a solid background in web development.
-                    Passionate about crafting responsive and efficient web solutions, dedicated to delivering
-                    high-quality work. Seeking opportunities to leverage my skills and expertise in innovative projects.
+                <p className="text-md text-muted-foreground">
+                    I&apos;m an Engineering Manager, technologist, and creator passionate about building resilient
+                    systems, empowering teams, and driving meaningful impact through technology. With extensive
+                    experience in infrastructure, protocols, and frameworks, I lead high-performing teams at Chime,
+                    delivering scalable solutions that serve millions of users. I also founded{' '}
+                    <a href="www.oatproductivity.com" className="text-primary">
+                        Oat Productivity
+                    </a>
+                    , a company dedicated to developing personal agile planners that guide users toward organized
+                    thinking and effective goal management, reflecting my commitment to creating impactful,
+                    user-centered products.
+                </p>
+                <p className="text-md text-muted-foreground">
+                    Outside of work, I serve as a technical advisor for startups, mentor aspiring leaders, and explore
+                    the intersection of technology and creativity. I’m also working on a novel and co-developing a
+                    horror game, channeling my love for storytelling and interactive design. Whether tackling complex
+                    engineering challenges, shaping the future of tech, or creating immersive experiences, I strive to
+                    bring curiosity, precision, and innovation to everything I do.
                 </p>
             </div>
+
+            {/* Education Section */}
             <div className="flex flex-col space-y-6">
                 <Typography variant="h2">Education</Typography>
                 <div className="flex flex-col gap-3">
@@ -29,6 +47,8 @@ export const About = () => {
                     ))}
                 </div>
             </div>
+
+            {/* Work Experience Section */}
             <div className="flex flex-col space-y-6">
                 <Typography variant="h2">Work Experience</Typography>
                 <div className="flex flex-col gap-3">
@@ -41,6 +61,8 @@ export const About = () => {
                     ))}
                 </div>
             </div>
+
+            {/* Biography Section */}
             <div className="flex flex-col space-y-6">
                 <Typography variant="h2">Biography</Typography>
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -56,8 +78,20 @@ export const About = () => {
                     ))}
                 </div>
             </div>
+
+            {/* Skills Section */}
             <div className="flex flex-col space-y-6">
                 <Typography variant="h2">My Skills</Typography>
+                <p className="text-lg text-muted-foreground">
+                    Over my career, I’ve cultivated a diverse set of skills, including:
+                </p>
+                <ul className="list-disc pl-6 text-muted-foreground">
+                    <li>Engineering team leadership and mentorship</li>
+                    <li>Infrastructure, protocol design, and system resilience</li>
+                    <li>Ruby, GoLang, and microservices architecture</li>
+                    <li>Agile development practices and roadmap planning</li>
+                    <li>Technical advisory and startup mentoring</li>
+                </ul>
                 <SkillsCarousel />
             </div>
         </section>

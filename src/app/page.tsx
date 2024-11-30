@@ -18,13 +18,19 @@ const HomePage = () => {
                             variant="h1"
                             className="text-base sm:text-xl md:text-3xl lg:text-5xl font-bold leading-none tracking-tight"
                         >
-                            Hi, I&apos;m <span className="text-primary">Bhavya</span>
+                            Hi, I&apos;m <span className="text-primary">Bhavya</span>.
                         </Typography>
                     </div>
                     <p className="text-md text-muted-foreground">
-                        I&apos;m a passionate Full Stack Developer who enjoys transforming lines of code into meaningful
-                        solutions. Continuously exploring the realms of technology to craft innovative and impactful
-                        projects.
+                        I&apos;m an Engineering Manager and technologist passionate about building resilient systems,
+                        empowering teams, and delivering impactful solutions. At Chime, I lead high-performing teams,
+                        and as the founder of{' '}
+                        <a href="www.oatproductivity.com" className="text-primary">
+                            Oat Productivity
+                        </a>
+                        , I create physical tools for organized thinking and goal management. Outside of work, I advise
+                        startups, mentor leaders, and explore creative pursuits like writing, art, music, and finding
+                        new ways to blend innovation with storytelling.
                     </p>
                     <div className="flex space-x-4">
                         <NextLink href="/projects">
@@ -41,7 +47,7 @@ const HomePage = () => {
                     </div>
                 </div>
                 <Image
-                    src="/images/profile.webp"
+                    src="/images/profile.png"
                     alt="Profile"
                     width={500}
                     height={500}
