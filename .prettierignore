@@ -6,3 +6,6 @@ out
 
 # .prettierignore ignore all .mdx files
 *.mdx
+
+# Ignore all files under src/data
+src/data/*
