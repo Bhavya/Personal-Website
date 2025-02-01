@@ -1,15 +1,10 @@
 # Personal Website
 
-![https://badend.is-a.dev/](https://raw.githubusercontent.com/BadEnd777/Personal-Website/main/.github/assets/preview.png)
-
-Welcome to my personal website project! This repository contains the code for my personal website, where I showcase my portfolio, projects, and other information about myself.
+Welcome to my personal website project! This repository contains the code for my personal website, where I showcase my portfolio, projects, and other information about myself. It was cloned from [https://github.com/BadEnd777/Personal-Website](https://github.com/BadEnd777/Personal-Website). I have made some changes to the code to make it more personalized to me.
 
 The website is built using [Next.js](https://nextjs.org/) as the build tool, [Shadcn UI](https://ui.shadcn.com/) as the JavaScript library for building user interfaces, [Tailwind CSS](https://tailwindcss.com/) for styling, and [TypeScript](https://www.typescriptlang.org/) for type checking and improved developer experience.
 
-The website is hosted on [https://badend.is-a.dev/](https://badend.is-a.dev/), and you can visit it to see the live version.
-
-[![CodeQL](https://github.com/BadEnd777/Personal-Website/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/BadEnd777/Personal-Website/actions/workflows/github-code-scanning/codeql)
-[![🛡️ GitGuardian scan](https://github.com/BadEnd777/Personal-Website/actions/workflows/gitguardian.yml/badge.svg)](https://github.com/BadEnd777/Personal-Website/actions/workflows/gitguardian.yml)
+The website is hosted on [https://www.bhavyakashyap.com/](https://www.bhavyakashyap.com/), and you can visit it to see the live version.
 
 ## Table of Contents
 
