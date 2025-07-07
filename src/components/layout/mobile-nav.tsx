@@ -3,7 +3,6 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { routes } from '@/data'
@@ -25,16 +24,6 @@ export const MobileNav = () => {
                             <DropdownMenuItem>{route.label}</DropdownMenuItem>
                         </NextLink>
                     ))}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                        <NextLink
-                            href="https://github.com/Bhavya/Portfolio-Website"
-                            target="_blank"
-                            aria-label="GitHub repository"
-                        >
-                            View on GitHub
-                        </NextLink>
-                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

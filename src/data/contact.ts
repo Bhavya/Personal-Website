@@ -14,4 +14,9 @@ export const contact = [
         label: 'TikTok',
         link: 'https://www.tiktok.com/@madebybhavya',
     },
+    {
+        icon: 'icon-[tabler--brand-github]',
+        label: 'GitHub',
+        link: 'https://github.com/Bhavya',
+    },
 ]

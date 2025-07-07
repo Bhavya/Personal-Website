@@ -1,7 +1,5 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { routes } from '@/data'
 import NextLink from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -30,18 +28,6 @@ export const DesktopNav = () => {
                     </NextLink>
                 ))}
             </nav>
-            <Separator orientation="vertical" className="h-8" />
-            <div className="flex items-center space-x-1">
-                <NextLink
-                    href="https://github.com/Bhavya/Portfolio-Website"
-                    target="_blank"
-                    aria-label="GitHub repository"
-                >
-                    <Button variant="ghost" size="icon" aria-label="GitHub repository">
-                        <span className="icon-[tabler--brand-github] size-5" />
-                    </Button>
-                </NextLink>
-            </div>
         </div>
     )
 }
