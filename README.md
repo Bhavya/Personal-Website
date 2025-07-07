@@ -42,13 +42,13 @@ To work on the project locally, ensure you have Node.js installed on your machin
 -   Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/your-website-repo.git
+git clone https://github.com/Bhavya/Personal-Website.git
 ```
 
 -   Navigate to the project directory:
 
 ```bash
-cd your-website-repo # or open the directory in your file explorer
+cd Personal-Website # or open the directory in your file explorer
 ```
 
 -   Install dependencies:
