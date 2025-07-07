@@ -3,6 +3,7 @@ import { BASE_URL, OPEN_GRAPH_IMAGE } from '@/config'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { ReactNode } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import '@/styles/globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -107,6 +108,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
                 <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
                     {children}
                 </ThemeProvider>
+                <Analytics />
             </body>
         </html>
     )
