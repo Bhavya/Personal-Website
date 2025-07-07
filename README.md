@@ -99,7 +99,7 @@ The project structure is as follows:
     -   `blog/`: MDX blog posts
     -   `styles/`: Global CSS and Tailwind styles
 -   `CLAUDE.md`: Claude Code configuration and project documentation
--   `summary.md`: Comprehensive project and personal summary
+-   `PERSONAL_SUMMARY.md`: Comprehensive project and personal summary
 -   `components.json`: shadcn/ui components configuration
 -   `next.config.mjs`: Next.js configuration with static export
 -   `tailwind.config.ts`: Tailwind CSS configuration with custom theme
@@ -111,7 +111,7 @@ This template is optimized for use with [Claude Code](https://claude.ai/code) fo
 
 ### Getting Started with Claude Code
 
-1. **Setup**: Ensure you have `CLAUDE.md` and `summary.md` in your project root (both included in this template)
+1. **Setup**: Ensure you have `CLAUDE.md` and `PERSONAL_SUMMARY.md` in your project root (both included in this template)
 
 2. **CLAUDE.md**: Contains development commands, project architecture, and guidance for Claude Code:
    - Development commands (`npm run dev`, `npm run build`, etc.)
@@ -119,7 +119,7 @@ This template is optimized for use with [Claude Code](https://claude.ai/code) fo
    - Component patterns and data management approach
    - Blog system configuration
 
-3. **summary.md**: Comprehensive personal and professional summary that Claude Code uses to:
+3. **PERSONAL_SUMMARY.md**: Comprehensive personal and professional summary that Claude Code uses to:
    - Generate relevant content for your pages
    - Understand your background for consistent messaging
    - Create appropriate project descriptions and portfolio content
@@ -139,9 +139,9 @@ The template's structured data approach (`src/data/*.ts`) makes it easy for Clau
 
 ### Example Claude Code Prompts
 
-- "Update my bio based on the summary.md"
+- "Update my bio based on the PERSONAL_SUMMARY.md"
 - "Add a new project to my portfolio"
-- "Create a testimonials section using the quotes in summary.md"
+- "Create a testimonials section using the quotes in PERSONAL_SUMMARY.md"
 - "Update the color scheme to be more professional"
 
 ## Contributing
