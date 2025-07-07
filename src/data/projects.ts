@@ -22,6 +22,7 @@ export const projects = [
             link: 'https://github.com/Bhavya/gen-ai-prompts',
             icon: 'icon-[tabler--arrow-right]',
         },
+        note: undefined,
         isFeatured: true,
         isFullWidth: true,
     },
