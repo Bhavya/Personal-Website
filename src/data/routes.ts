@@ -3,6 +3,6 @@ export const routes = [
     //{ path: '/about', label: 'About' },
     { path: '/advising', label: 'Advising' },
     { path: '/investing', label: 'Investing' },
-    { path: '/blog', label: 'Projects' },
+    { path: '/blog', label: 'Blog' },
     { path: '/contact', label: 'Connect' },
 ]
