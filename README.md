@@ -1,14 +1,14 @@
-# Personal Website
+# Personal Website Template
 
-Welcome to my personal website project! This repository contains the code for my personal website, where I showcase my portfolio, projects, and other information about myself. It was cloned from [https://github.com/BadEnd777/Personal-Website](https://github.com/BadEnd777/Personal-Website). I have made some changes to the code to make it more personalized to me.
+A modern, professional personal website built with Next.js, TypeScript, shadcn/ui, and Tailwind CSS. Originally cloned from [BadEnd777/Personal-Website](https://github.com/BadEnd777/Personal-Website) and extensively customized.
 
-The website is built using [Next.js](https://nextjs.org/) as the build tool, [Shadcn UI](https://ui.shadcn.com/) as the JavaScript library for building user interfaces, [Tailwind CSS](https://tailwindcss.com/) for styling, and [TypeScript](https://www.typescriptlang.org/) for type checking and improved developer experience.
+This template is optimized for engineering leaders, technical professionals, and entrepreneurs who want to showcase their work, investments, and advisory roles.
 
-The website is hosted on [https://www.bhavyakashyap.com/](https://www.bhavyakashyap.com/), and you can visit it to see the live version.
+The website is built using [Next.js](https://nextjs.org/) as the framework, [shadcn/ui](https://ui.shadcn.com/) for beautiful components, [Tailwind CSS](https://tailwindcss.com/) for styling, and [TypeScript](https://www.typescriptlang.org/) for type safety.
 
 ## Table of Contents
 
--   [Personal Website](#personal-website)
+-   [Personal Website Template](#personal-website-template)
     -   [Table of Contents](#table-of-contents)
     -   [Prerequisites](#prerequisites)
     -   [Technologies Used](#technologies-used)
@@ -16,9 +16,9 @@ The website is hosted on [https://www.bhavyakashyap.com/](https://www.bhavyakash
         -   [Development](#development)
         -   [Production](#production)
     -   [Project Structure](#project-structure)
+    -   [Using with Claude Code](#using-with-claude-code)
     -   [Contributing](#contributing)
     -   [License](#license)
-    -   [Contact](#contact)
 
 ## Prerequisites
 
@@ -42,15 +42,13 @@ To work on the project locally, ensure you have Node.js installed on your machin
 -   Clone the repository:
 
 ```bash
-git clone https://github.com/BadEnd777/Personal-Website.git
+git clone https://github.com/your-username/your-website-repo.git
 ```
-
-> Alternatively, you can [download the ZIP file](https://github.com/BadEnd777/Personal-Website/archive/refs/heads/main.zip) and extract it to a directory of your choice.
 
 -   Navigate to the project directory:
 
 ```bash
-cd Personal-Website # or open the directory in your file explorer
+cd your-website-repo # or open the directory in your file explorer
 ```
 
 -   Install dependencies:
@@ -81,17 +79,70 @@ The optimized production-ready assets will be generated in the `dist` directory.
 
 The project structure is as follows:
 
--   `public`: Stores static assets like images, and icons.
--   `src`: Contains the source files for the website.
-    -   `app`: Contains the Next.js pages for the website.
-    -   `components`: Contains the React components used in the website.
-    -   `data`: Contains the data files for the website.
-    -   `lib`: Contains the utility functions and helper modules for the website.
-    -   `styles`: Contains the Tailwind CSS styles for the website.
--   `components.json`: Shadcn-solid components configuration.
--   `postcss.config.js`: PostCSS configuration.
--   `tailwind.config.ts`: Tailwind CSS configuration.
--   `tsconfig.json`: TypeScript configuration.
+-   `public/`: Static assets like images, icons, and favicon
+-   `src/`: Source files for the website
+    -   `app/`: Next.js App Router pages and layouts
+        -   `advising/`: Technical advising page
+        -   `investing/`: Angel investing page  
+        -   `projects/`: Projects showcase page
+        -   `blog/`: Blog listing and individual posts
+    -   `components/`: React components
+        -   `layout/`: Navigation, header, footer components
+        -   `sections/`: Page section components (about, projects, contact)
+        -   `ui/`: shadcn/ui components
+    -   `data/`: Data files for content management
+        -   `contact.ts`: Social media and contact links
+        -   `projects.ts`: Project portfolio data
+        -   `experience.ts`: Work experience data
+        -   `routes.ts`: Navigation menu configuration
+    -   `lib/`: Utility functions and helpers
+    -   `blog/`: MDX blog posts
+    -   `styles/`: Global CSS and Tailwind styles
+-   `CLAUDE.md`: Claude Code configuration and project documentation
+-   `summary.md`: Comprehensive project and personal summary
+-   `components.json`: shadcn/ui components configuration
+-   `next.config.mjs`: Next.js configuration with static export
+-   `tailwind.config.ts`: Tailwind CSS configuration with custom theme
+-   `tsconfig.json`: TypeScript configuration
+
+## Using with Claude Code
+
+This template is optimized for use with [Claude Code](https://claude.ai/code) for easy customization and maintenance. 
+
+### Getting Started with Claude Code
+
+1. **Setup**: Ensure you have `CLAUDE.md` and `summary.md` in your project root (both included in this template)
+
+2. **CLAUDE.md**: Contains development commands, project architecture, and guidance for Claude Code:
+   - Development commands (`npm run dev`, `npm run build`, etc.)
+   - Project structure and tech stack overview
+   - Component patterns and data management approach
+   - Blog system configuration
+
+3. **summary.md**: Comprehensive personal and professional summary that Claude Code uses to:
+   - Generate relevant content for your pages
+   - Understand your background for consistent messaging
+   - Create appropriate project descriptions and portfolio content
+   - Maintain authentic voice across all sections
+
+### Customizing Your Website
+
+With these files in place, you can ask Claude Code to:
+
+- **Update content**: "Update my work experience section with my new role"
+- **Add new pages**: "Create a speaking engagements page"  
+- **Modify styling**: "Make the homepage more minimal"
+- **Add functionality**: "Add a newsletter signup form"
+- **Update projects**: "Replace the projects list with my new repositories"
+
+The template's structured data approach (`src/data/*.ts`) makes it easy for Claude Code to understand and modify your content while maintaining consistency across the site.
+
+### Example Claude Code Prompts
+
+- "Update my bio based on the summary.md"
+- "Add a new project to my portfolio"
+- "Create a testimonials section using the quotes in summary.md"
+- "Update the color scheme to be more professional"
 
 ## Contributing
 
@@ -100,10 +151,6 @@ Contributions are welcome! If you find any bugs or have suggestions for improvem
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
-## Contact
-
-Feel free to contact me at [badend777@proton.me](mailto:badend777@proton.me) for any questions or inquiries.
 
 Happy coding! 🚀
 
