@@ -2,7 +2,7 @@ export const routes = [
     { path: '/', label: 'Home' },
     //{ path: '/about', label: 'About' },
     { path: '/advising', label: 'Advising' },
-    { path: '/projects', label: 'Investing' },
+    { path: '/investing', label: 'Investing' },
     { path: '/blog', label: 'Projects' },
     { path: '/contact', label: 'Connect' },
 ]
