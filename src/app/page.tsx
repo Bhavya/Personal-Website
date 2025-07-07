@@ -54,7 +54,6 @@ const HomePage = () => {
                 />
             </section>
             <About />
-            <Contact />
         </Layout>
     )
 }
