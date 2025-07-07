@@ -69,7 +69,7 @@ const LinksPage = () => {
                                     rel="noopener noreferrer"
                                 >
                                     <span className="icon-[tabler--award-filled] text-2xl" />
-                                    UC Berkeley FFF Pitch Competition
+                                    BFFF Pitch Competition
                                 </a>
                             </Button>
                         </div>
