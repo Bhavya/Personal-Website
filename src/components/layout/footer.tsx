@@ -9,17 +9,6 @@ export const Footer = () => {
             <div className="container flex h-full flex-col items-center justify-between space-y-2 py-4 md:flex-row md:space-y-0">
                 <div className="flex flex-col items-center space-y-2 md:items-start">
                     <p>&copy; {date} Bhavya, All Rights Reserved</p>
-                    <p>
-                        This website is open source.{' '}
-                        <NextLink
-                            href="https://github.com/Bhavya/Portfolio-Website"
-                            target="_blank"
-                            className="link"
-                            aria-label="GitHub repository"
-                        >
-                            View on GitHub
-                        </NextLink>
-                    </p>
                 </div>
                 <div className="flex space-x-4">
                     {contact.map((item) => (
