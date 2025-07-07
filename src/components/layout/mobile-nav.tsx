@@ -1,4 +1,3 @@
-import { ModeToggle } from '@/components/mode-toggle'
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -13,7 +12,6 @@ import NextLink from 'next/link'
 export const MobileNav = () => {
     return (
         <div className="flex items-center md:hidden space-x-1">
-            <ModeToggle />
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon">

@@ -1,6 +1,5 @@
 'use client'
 
-import { ModeToggle } from '@/components/mode-toggle'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { routes } from '@/data'
@@ -33,7 +32,6 @@ export const DesktopNav = () => {
             </nav>
             <Separator orientation="vertical" className="h-8" />
             <div className="flex items-center space-x-1">
-                <ModeToggle />
                 <NextLink
                     href="https://github.com/Bhavya/Portfolio-Website"
                     target="_blank"

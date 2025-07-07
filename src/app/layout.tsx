@@ -104,7 +104,7 @@ const RootLayout = ({ children }: RootLayoutProps) => {
                 <script src="https://afarkas.github.io/lazysizes/lazysizes.min.js" async></script>
             </head>
             <body className={inter.className}>
-                <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
+                <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
                     {children}
                 </ThemeProvider>
             </body>
