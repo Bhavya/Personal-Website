@@ -37,49 +37,30 @@ export const About = () => {
             {/* Work Experience Section */}
             <div className="flex flex-col space-y-6">
                 <Typography variant="h2">Some Stuff I&apos;ve Worked On</Typography>
-                <div className="flex flex-col gap-3">
-                    {experience.map((item) => (
-                        <div key={item.title} className="flex flex-col space-y-2 border-l-4 border-primary pl-4">
-                            <Typography variant="h3">{item.title}</Typography>
-                            <p className="text-md text-muted-foreground">{item.subtitle}</p>
-                            <p className="text-sm text-muted-foreground">{item.description}</p>
-                        </div>
-                    ))}
+                <div className="flex flex-col space-y-4 text-muted-foreground">
+                    <p>
+                        Over the last decade, I've built systems that serve millions of users across fintech, consumer platforms, and developer infrastructure. 
+                        At <span className="text-primary font-medium">Chime</span>, I've led teams through high-growth periods, overseeing messaging systems processing 30M+ messages per hour, 
+                        building resilience mechanisms that keep banking services running, and creating language frameworks that boost developer productivity.
+                    </p>
+                    <p>
+                        Before fintech, I contributed to products you've probably used. At <span className="text-primary font-medium">Amazon</span>, I worked on 
+                        Alexa's style recommendations and real-time routing for Amazon Maps. At <span className="text-primary font-medium">Microsoft</span>, I built 
+                        the intelligent storage cleanup features in Windows 10 (earning a patent) and ML-powered content discovery across Windows and Xbox. 
+                        My time at <span className="text-primary font-medium">Facebook</span> was spent reimagining photo albums for Timeline and creating the HTML5 batch uploader.
+                    </p>
+                    <p>
+                        As an entrepreneur, I founded <span className="text-primary font-medium">Oat Productivity</span> to create agile planners that blend behavioral science with practical workflows. 
+                        I'm also building <span className="text-primary font-medium">Democratized AI Foundry</span> to make advanced AI capabilities accessible to small teams.
+                    </p>
+                    <p>
+                        On the investing side, I'm an active angel investor with a portfolio spanning SaaS, consumer, and infrastructure startups. 
+                        I lead the San Francisco chapter of <span className="text-primary font-medium">Brown Girl Angels</span> and advise early-stage companies on technical strategy and team building.
+                    </p>
                 </div>
             </div>
 
-            {/* Biography Section */}
-            <div className="flex flex-col space-y-6">
-                <Typography variant="h2">Biography</Typography>
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    {biography.map((item) => (
-                        <Card key={item.year} className="w-full">
-                            <CardHeader>
-                                <CardTitle>{item.year}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <CardDescription>{item.description}</CardDescription>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </div>
 
-            {/* Skills Section */}
-            <div className="flex flex-col space-y-6">
-                <Typography variant="h2">My Skills</Typography>
-                <p className="text-lg text-muted-foreground">
-                    Over my career, I’ve cultivated a diverse set of skills, including:
-                </p>
-                <ul className="list-disc pl-6 text-muted-foreground">
-                    <li>Engineering team leadership and mentorship</li>
-                    <li>Infrastructure, protocol design, and system resilience</li>
-                    <li>Ruby, GoLang, and microservices architecture</li>
-                    <li>Agile development practices and roadmap planning</li>
-                    <li>Technical advisory and startup mentoring</li>
-                </ul>
-                <SkillsCarousel />
-            </div>
         </section>
     )
 }

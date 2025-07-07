@@ -22,15 +22,13 @@ const HomePage = () => {
                         </Typography>
                     </div>
                     <p className="text-md text-muted-foreground">
-                        I&apos;m an Engineering Manager and technologist passionate about building resilient systems,
-                        empowering teams, and delivering impactful solutions. At Chime, I lead high-performing teams,
-                        and as the founder of{' '}
+                        Engineering leader, angel investor, and creator. I build resilient systems at scale, lead teams
+                        that ship products to millions of users, and invest in early-stage startups. Currently an EM at
+                        Chime and founder of{' '}
                         <a href="https://oatproductivity.com/" className="text-primary">
                             Oat Productivity
                         </a>
-                        , I create physical tools for organized thinking and goal management. Outside of work, I advise
-                        startups, mentor leaders, and explore creative pursuits like writing, art, music, and finding
-                        new ways to blend innovation with storytelling.
+                        . When I&apos;m not coding or mentoring, I&apos;m writing a novel or co-developing a horror game.
                     </p>
                     <div className="flex space-x-4">
                         <NextLink href="/projects">
@@ -56,7 +54,6 @@ const HomePage = () => {
                 />
             </section>
             <About />
-            <Projects featured />
             <Contact />
         </Layout>
     )
