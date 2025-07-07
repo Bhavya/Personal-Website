@@ -14,62 +14,15 @@ isFullWidth: true - Make the project image full width.
 
 export const projects = [
     {
-        title: 'Personal Website',
-        description: 'My personal website built with Next.js, TypeScript, shadcn/ui, and Tailwind CSS.',
-        image: '/images/projects/personal-website.webp',
+        title: 'Gen AI Prompts',
+        description: 'A comprehensive collection of AI prompts designed for software engineers, engineering managers, product managers, and career development. These prompts are optimized for different AI models and organized by role and use case.',
+        image: '/images/projects/gen-ai-prompts.webp',
         status: {
             text: 'View Source',
-            link: 'https://github.com/Bhavya/Personal-Website',
+            link: 'https://github.com/Bhavya/gen-ai-prompts',
             icon: 'icon-[tabler--arrow-right]',
         },
         isFeatured: true,
         isFullWidth: true,
-    },
-    {
-        title: 'Chat Bridge',
-        description:
-            'An npm package that makes it easier to integrate Facebook Page webhook into your Node.js application.',
-        image: '/images/projects/chat-bridge.webp',
-        status: {
-            text: 'View Source',
-            link: 'https://github.com/Bhavya/Chat-Bridge',
-            icon: 'icon-[tabler--arrow-right]',
-        },
-        isFeatured: true,
-    },
-    {
-        title: 'guard-env',
-        description:
-            'Node.js module for type-checking and guarding environment variables based on specified configurations.',
-        image: '/images/projects/guard-env.webp',
-        status: {
-            text: 'View Source',
-            link: 'https://github.com/Bhavya/guard-env',
-            icon: 'icon-[tabler--arrow-right]',
-        },
-        note: 'In development',
-        isFeatured: true,
-    },
-    {
-        title: 'VRConnectivity Shield',
-        description: 'DNS blocking tool to prevent VRChat analytics and tracking.',
-        image: '/images/projects/vrconnectivity-shield.webp',
-        status: {
-            text: 'View Source',
-            link: 'https://github.com/Bhavya/VRConnectivity-Shield',
-            icon: 'icon-[tabler--arrow-right]',
-        },
-        isFeatured: true,
-    },
-    {
-        title: 'TikTok Harbor',
-        description: 'Free online tool to download TikTok videos/slideshows without watermark.',
-        image: '/images/projects/tiktok-harbor.webp',
-        status: {
-            text: 'View Source',
-            link: 'https://github.com/Bhavya/TikTok-Harbor',
-            icon: 'icon-[tabler--arrow-right]',
-        },
-        isFeatured: true,
     },
 ]
