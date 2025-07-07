@@ -48,16 +48,36 @@ const LinksPage = () => {
                                 className="rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-lg"
                             />
                         </div>
-                        <h1 className="text-2xl font-bold text-foreground mb-2">
-                            Bhavya Kashyap
-                        </h1>
                         <p className="text-muted-foreground text-sm">
                             Engineering Leader • Angel Investor • Creator
                         </p>
                     </div>
 
+                    {/* Featured Section */}
+                    <div className="mb-8">
+                        <h2 className="text-lg font-semibold text-foreground mb-4 text-center">Featured</h2>
+                        <div className="space-y-4">
+                            <Button
+                                variant="outline"
+                                size="lg"
+                                className="w-full h-14 text-lg justify-start gap-3 hover:scale-105 transition-transform"
+                                asChild
+                            >
+                                <a
+                                    href="https://docs.google.com/forms/d/e/1FAIpQLSeoMomg-4pnfYlhoSK9BncGxzZ6bLXCHjrmtUZ__jyP--GaqQ/viewform?usp=dialog"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <span className="icon-[tabler--award-filled] text-2xl" />
+                                    UC Berkeley FFF Pitch Competition
+                                </a>
+                            </Button>
+                        </div>
+                    </div>
+
                     {/* Links Section */}
                     <div className="space-y-4">
+                        <h2 className="text-lg font-semibold text-foreground mb-4 text-center">Links</h2>
                         {/* Social Media Links */}
                         {contact.map((item) => (
                             <Button
@@ -91,6 +111,24 @@ const LinksPage = () => {
                             </NextLink>
                         </Button>
 
+
+                        {/* Oat Productivity */}
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            className="w-full h-14 text-lg justify-start gap-3 hover:scale-105 transition-transform"
+                            asChild
+                        >
+                            <a
+                                href="https://oatproductivity.com/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span className="icon-[tabler--book] text-2xl" />
+                                Oat Productivity
+                            </a>
+                        </Button>
+
                         {/* Featured Projects */}
                         {projects.filter(p => p.isFeatured).map((project) => (
                             <Button
@@ -110,23 +148,6 @@ const LinksPage = () => {
                                 </a>
                             </Button>
                         ))}
-
-                        {/* Oat Productivity */}
-                        <Button
-                            variant="outline"
-                            size="lg"
-                            className="w-full h-14 text-lg justify-start gap-3 hover:scale-105 transition-transform"
-                            asChild
-                        >
-                            <a
-                                href="https://oatproductivity.com/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <span className="icon-[tabler--calendar] text-2xl" />
-                                Oat Productivity
-                            </a>
-                        </Button>
 
                         {/* Contact Page */}
                         <Button
