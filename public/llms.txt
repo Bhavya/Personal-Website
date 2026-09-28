@@ -15,9 +15,10 @@ She writes about technology, systems, AI, startups, payments, and other subjects
 - Links: https://bhavyakashyap.com/links/
 - Mithuna Capital: https://www.mithuna.capital/
 - Settlement: https://www.withsettlement.com/
+- DealMemo: https://trydealmemo.so/
 
 ## Current projects
 
 - Settlement: reliable execution for AI agents that can move money and take real-world actions.
-- DealMemo: a lightweight diligence tool for angel investors.
+- DealMemo (https://trydealmemo.so/): a lightweight diligence tool for angel investors.
 - Embermere: a cosy narrative game about ghosts, small towns, and secrets.

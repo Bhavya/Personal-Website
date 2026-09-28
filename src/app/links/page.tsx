@@ -23,6 +23,7 @@ const links = [
     { label: 'Website', href: '/', internal: true },
     { label: 'Writing', href: '/blog', internal: true },
     { label: 'Settlement', href: 'https://www.withsettlement.com/' },
+    { label: 'DealMemo', href: 'https://trydealmemo.so/' },
     { label: 'Mithuna Capital', href: 'https://www.mithuna.capital/' },
 ]
 
