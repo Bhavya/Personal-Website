@@ -70,7 +70,7 @@ const HomePage = async () => {
                         </a>
                     </div>
 
-                    <div className="relative mt-10 w-full max-w-2xl">
+                    <div className="relative mt-10 w-full max-w-2xl sm:max-w-xl md:max-w-md">
                         <div
                             className="absolute inset-0 translate-x-3 translate-y-3 border border-border sm:translate-x-4 sm:translate-y-4"
                             aria-hidden="true"
