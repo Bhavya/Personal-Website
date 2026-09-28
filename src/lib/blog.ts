@@ -18,6 +18,8 @@ export type BlogFrontmatter = {
     tags: string[]
     image?: string
     date: string
+    externalUrl?: string
+    originalSource?: string
 }
 
 export type BlogData = {
