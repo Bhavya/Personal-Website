@@ -1,0 +1,307 @@
+---
+title: "Where I would put an agent in an Argo CD pipeline"
+description: "If an agent is going to make deployment changes, I would rather have it propose Git changes than give it credentials to production."
+tags:
+  - AI agents
+  - Argo CD
+  - Kubernetes
+  - CI/CD
+  - GitOps
+date: "2026-07-30"
+---
+
+I've been thinking about where agents actually belong in a deployment pipeline. The tempting version is to give an agent access to `kubectl`, an Argo CD token, or some internal deployment API and let it make changes directly. I think that puts the agent on the wrong side of the boundary.
+
+If the deployment system already uses GitOps, I would rather have the agent behave like a developer. It can read the request, inspect the repository and whatever operational context it is allowed to see, make a small change on a branch, and open a pull request. CI can validate the change, a human or policy gate can approve it, and Argo CD can remain responsible for turning the merged desired state into cluster state.
+
+The shape looks roughly like this:
+
+```text
+issue / alert / deployment request
+              |
+              v
+         agent runner
+              |
+              |  proposes a change
+              v
+        branch + commit
+              |
+              v
+         pull request
+              |
+       +------+------+
+       |             |
+       v             v
+   CI checks     review / policy
+       |             |
+       +------+------+
+              |
+              v
+            merge
+              |
+              v
+        config repository
+              |
+              v
+           Argo CD
+              |
+              v
+       Kubernetes cluster
+```
+
+The important part is what is missing. The agent does not have a kubeconfig, it does not call `kubectl apply`, and it does not need permission to call `argocd app sync`. Argo CD already knows how to watch Git and reconcile the application after the desired state changes, so I would keep that responsibility there. The [Argo CD CI documentation](https://argo-cd.readthedocs.io/en/latest/user-guide/ci_automation/) explicitly treats updating Git as the normal deployment path, and an explicit sync call is unnecessary when automated synchronization is enabled.
+
+A simple Application for this pattern might look like this:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: payments
+  namespace: argocd
+spec:
+  project: production
+
+  source:
+    repoURL: https://github.com/example/platform-config.git
+    targetRevision: main
+    path: environments/prod/payments
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: payments
+
+  syncPolicy:
+    automated:
+      enabled: true
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+```
+
+I would probably start with `prune: false` for an agent-authored path unless I had a strong reason not to. Updating an image or changing a resource limit is one class of action; deciding that a resource should no longer exist is a different blast radius. Argo CD supports automatic pruning, but there is no reason every capability needs to be enabled just because it exists.
+
+The config repository could stay boring:
+
+```text
+platform-config/
+  apps/
+    payments/
+      base/
+        deployment.yaml
+        service.yaml
+
+  environments/
+    staging/
+      payments/
+        kustomization.yaml
+
+    prod/
+      payments/
+        kustomization.yaml
+
+  ci/
+    validate-agent-diff.py
+```
+
+For a normal deployment, the agent may only need to change an image reference:
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../../apps/payments/base
+
+images:
+  - name: ghcr.io/example/payments
+    newName: ghcr.io/example/payments
+    newTag: 9f13c42
+```
+
+That is a much easier agent action to reason about than "deploy version 9f13c42." The output is a normal Git diff, it can be reviewed before anything happens, and the exact state Argo CD will eventually see is visible to everybody else.
+
+I would also give agent-created pull requests a stricter CI path than ordinary application code. The point is not that an agent is inherently malicious. The point is that cheap generation makes it very easy to produce a syntactically valid change with a much larger blast radius than intended.
+
+For example, I would put a basic diff policy in front of the normal Kubernetes validation:
+
+```python
+# ci/validate-agent-diff.py
+
+from pathlib import Path
+import subprocess
+import sys
+import yaml
+
+ALLOWED_PREFIX = "environments/prod/"
+BLOCKED_KINDS = {
+    "ClusterRole",
+    "ClusterRoleBinding",
+    "CustomResourceDefinition",
+    "Namespace",
+}
+
+changed = subprocess.check_output(
+    ["git", "diff", "--name-only", "origin/main...HEAD"],
+    text=True,
+).splitlines()
+
+for filename in changed:
+    if not filename.startswith(ALLOWED_PREFIX):
+        sys.exit(f"agent may not modify {filename}")
+
+    if not filename.endswith((".yaml", ".yml")):
+        continue
+
+    with Path(filename).open() as f:
+        for doc in yaml.safe_load_all(f):
+            if not doc:
+                continue
+
+            kind = doc.get("kind")
+            if kind in BLOCKED_KINDS:
+                sys.exit(f"agent may not create or modify {kind}")
+
+            pod_spec = (
+                doc.get("spec", {})
+                   .get("template", {})
+                   .get("spec", {})
+            )
+
+            for container in pod_spec.get("containers", []):
+                security = container.get("securityContext", {})
+                if security.get("privileged") is True:
+                    sys.exit(
+                        f"agent may not enable privileged mode in {filename}"
+                    )
+
+print("agent diff is inside the allowed deployment surface")
+```
+
+This is intentionally not a complete Kubernetes security policy. In a real environment I would rather express mature rules in an existing policy system, but even a small check illustrates the idea: the agent gets a defined change surface. It should not be able to turn "update the payments image" into "also modify a cluster role and create a privileged container."
+
+The corresponding GitHub Actions job can remain pretty conventional:
+
+```yaml
+name: validate deployment change
+
+on:
+  pull_request:
+    paths:
+      - "environments/**"
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Python dependencies
+        run: pip install pyyaml
+
+      - name: Apply agent-specific policy checks
+        if: contains(github.event.pull_request.labels.*.name, 'agent-authored')
+        run: python ci/validate-agent-diff.py
+
+      - name: Render production manifests
+        run: |
+          kubectl kustomize environments/prod/payments > /tmp/rendered.yaml
+
+      - name: Client-side Kubernetes validation
+        run: |
+          kubectl apply \
+            --dry-run=client \
+            -f /tmp/rendered.yaml
+```
+
+I would still have normal tests, schema validation, policy checks, and probably environment-specific rules around this. The interesting part is that none of those checks have to understand how the agent reasoned. They only have to understand the artifact it produced.
+
+The agent workflow itself should have Git permissions, not deployment permissions. In the simplest version, it can create a branch and PR but cannot bypass branch protection:
+
+```yaml
+name: deployment agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      request:
+        description: "What deployment change should be proposed?"
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  propose:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run deployment agent
+        run: |
+          python tools/deployment_agent.py \
+            --request "${{ inputs.request }}"
+
+      - name: Create branch and commit
+        run: |
+          BRANCH="agent/deploy-${GITHUB_RUN_ID}"
+
+          git config user.name "deployment-agent"
+          git config user.email "deployment-agent@example.com"
+
+          git switch -c "$BRANCH"
+          git add environments/
+          git commit -m "Propose deployment change"
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Agent-proposed deployment change" \
+            --body "Generated from: ${{ inputs.request }}" \
+            --label "agent-authored"
+        env:
+          GH_TOKEN: ${{ github.token }}
+```
+
+I left the model-specific part inside `deployment_agent.py` on purpose. Whether that implementation uses one provider, an internal model, or a more elaborate tool-calling framework should not change the deployment trust model. The agent can be replaced without redesigning how production is protected.
+
+If the agent needs operational context, I would separate read access from deploy access there too. GitHub Actions can use OIDC to obtain short-lived cloud credentials instead of storing long-lived keys, and that role can be limited to the metrics, logs, or metadata the agent needs to inspect. The [GitHub OIDC documentation](https://docs.github.com/en/actions/concepts/security/openid-connect) is useful here because the workflow identity can be constrained by repository and workflow claims instead of sharing a permanent AWS credential.
+
+There are some changes I would not let this flow merge automatically. Cluster-scoped RBAC, namespace deletion, CRDs, network policy changes, production database changes, and anything that materially expands privileges should probably require a different approval path. The fact that an agent produced a good explanation for a change does not reduce the blast radius of the change itself.
+
+For multi-step deployments, I would also keep sequencing declarative where possible instead of teaching the agent an imperative runbook. Argo CD already supports hooks and sync phases, so a migration that really must happen before the application rollout can be represented as a `PreSync` Job:
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: payments-migrate
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: ghcr.io/example/payments:9f13c42
+          command: ["./bin/migrate"]
+```
+
+Argo CD runs `PreSync` hooks before applying the normal sync resources and stops the sync if the hook fails. That is a much cleaner failure boundary than having an agent independently run a migration, wait for it, deploy the service, and then attempt to infer whether everything worked.
+
+The bigger point is that I do not think agents need to become deployment systems. We already have deployment systems with reconciliation, ordering, policy, audit history, and a reasonably well-understood permission model. An agent is useful one layer earlier, where the work is interpreting intent and proposing a concrete change.
+
+That also gives us a nice property when the agent is wrong. A bad proposal becomes a failed check or a rejected pull request instead of an incident. For production infrastructure, that seems like a much better default.
