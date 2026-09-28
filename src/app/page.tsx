@@ -168,35 +168,9 @@ const HomePage = async () => {
 
                 <section className="border-t border-border py-10 md:py-12">
                     <div className="editorial-label mb-5">Other stuff</div>
-                    <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
-                        <a
-                            href="https://www.mithuna.capital/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group block"
-                        >
-                            <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
-                                Mithuna Capital ↗
-                            </div>
-                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                                My angel investing and advising.
-                            </p>
-                        </a>
 
-                        <a
-                            href="https://www.bhavyakashyap.me/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group block"
-                        >
-                            <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
-                                Speaking ↗
-                            </div>
-                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                                Women in Tech Summit, Mid-Atlantic and Mid-West, 2019.
-                            </p>
-                        </a>
-
+                    <div className="border-t border-border/70 py-5 first:border-t-0 first:pt-0">
+                        <div className="editorial-label mb-3">Patent</div>
                         <a
                             href="https://patents.google.com/patent/US20180121101A1/en"
                             target="_blank"
@@ -206,38 +180,76 @@ const HomePage = async () => {
                             <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
                                 Smart Storage Policy ↗
                             </div>
-                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                            <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
                                 A Microsoft patent filing I co-invented around automated storage management.
                             </p>
                         </a>
+                    </div>
 
-                                                <a
-                            href="https://www.instagram.com/p/DI_pggBMZx6/?stkn=MzRlODBiNWFlZA=="
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group block"
-                        >
-                            <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
-                                Brown Girl Angels profile ↗
-                            </div>
-                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                                An angel investor profile from Brown Girl Angels.
-                            </p>
-                        </a>
+                    <div className="border-t border-border/70 py-5">
+                        <div className="editorial-label mb-3">Professional</div>
+                        <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
+                            <a
+                                href="https://www.bhavyakashyap.me/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group block"
+                            >
+                                <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
+                                    Speaking ↗
+                                </div>
+                                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                    Women in Tech Summit, Mid-Atlantic and Mid-West, 2019.
+                                </p>
+                            </a>
 
-                        <a
-                            href="https://careers.chime.com/life-at-chime/its-a-chimed-life-meet-bhavya-kashyap/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group block"
-                        >
-                            <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
-                                Chime profile ↗
-                            </div>
-                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                                A profile about my path through engineering, product, and leadership.
-                            </p>
-                        </a>
+                            <a
+                                href="https://careers.chime.com/life-at-chime/its-a-chimed-life-meet-bhavya-kashyap/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group block"
+                            >
+                                <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
+                                    Chime profile ↗
+                                </div>
+                                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                    A profile about my path through engineering, product, and leadership.
+                                </p>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div className="border-t border-border/70 py-5">
+                        <div className="editorial-label mb-3">Investing</div>
+                        <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
+                            <a
+                                href="https://www.mithuna.capital/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group block"
+                            >
+                                <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
+                                    Mithuna Capital ↗
+                                </div>
+                                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                    My angel investing and advising.
+                                </p>
+                            </a>
+
+                            <a
+                                href="https://www.instagram.com/p/DI_pggBMZx6/?stkn=MzRlODBiNWFlZA=="
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group block"
+                            >
+                                <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
+                                    Brown Girl Angels profile ↗
+                                </div>
+                                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                    An angel investor profile from Brown Girl Angels.
+                                </p>
+                            </a>
+                        </div>
                     </div>
                 </section>
             </div>
