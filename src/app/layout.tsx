@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@/components/theme-provider'
-import { BASE_URL, OPEN_GRAPH_IMAGE } from '@/config'
+import { BASE_URL } from '@/config'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { ReactNode } from 'react'
@@ -10,44 +10,49 @@ const inter = Inter({ subsets: ['latin'] })
 
 const title = 'Bhavya Kashyap'
 const description =
-    "👋 Hello! I'm Bhavya, a passionate Full Stack Developer with expertise in efficient web solutions. Explore my portfolio and contact me on GitHub."
-const url = BASE_URL
+    'Personal site of Bhavya Kashyap. Writing and projects spanning technology, infrastructure, AI, fintech, games, and other interests.'
 
 export const metadata: Metadata = {
+    metadataBase: new URL(BASE_URL),
     title: {
-        template: `${title} - %s`,
-        default: `${title} - Personal Website`,
+        default: title,
+        template: `%s | ${title}`,
     },
     description,
-    authors: [
-        {
-            name: title,
-            url,
-        },
+    authors: [{ name: title, url: BASE_URL }],
+    creator: title,
+    keywords: [
+        'Bhavya Kashyap',
+        'technology',
+        'engineering leadership',
+        'infrastructure',
+        'developer platforms',
+        'fintech',
+        'AI',
+        'startups',
     ],
-    icons: {
-        icon: '/favicon.ico',
-        shortcut: '/favicon.ico',
-        apple: '/apple-touch-icon.png',
-        other: {
-            rel: 'apple-chrome-512x512',
-            url: '/android-chrome-512x512.png',
-        },
+    alternates: {
+        canonical: '/',
     },
-    metadataBase: new URL(url),
+    icons: {
+        icon: [
+            { url: '/favicon.svg', type: 'image/svg+xml' },
+            { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+        ],
+        shortcut: '/favicon.ico',
+        apple: '/favicon.svg',
+    },
     openGraph: {
-        title: {
-            template: `${title} - %s`,
-            default: `${title} - Personal Website`,
-        },
+        title,
         description,
-        url,
+        url: BASE_URL,
         siteName: title,
         images: [
             {
-                url: OPEN_GRAPH_IMAGE, // or an array of images
-                width: 800,
-                height: 600,
+                url: '/images/profile.png',
+                width: 700,
+                height: 875,
+                alt: 'Bhavya Kashyap',
             },
         ],
         locale: 'en_US',
@@ -55,22 +60,17 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: {
-            template: `${title} - %s`,
-            default: `${title} - Personal Website`,
-        },
+        title,
         description,
-        creator: '@Bhavya',
-        images: [OPEN_GRAPH_IMAGE], // or an array of images
+        creator: '@bhavbhavbhav',
+        images: ['/images/profile.png'],
     },
     robots: {
-        index: false,
+        index: true,
         follow: true,
-        nocache: true,
         googleBot: {
             index: true,
-            follow: false,
-            noimageindex: true,
+            follow: true,
             'max-video-preview': -1,
             'max-image-preview': 'large',
             'max-snippet': -1,
@@ -80,11 +80,35 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-    themeColor: '#2563EB',
+    themeColor: '#0b0a0d',
     width: 'device-width',
     initialScale: 1,
-    maximumScale: 5, // Update the maximumScale to allow zooming up to 5x
-    userScalable: true, // Enable user scalability
+    maximumScale: 5,
+    userScalable: true,
+}
+
+const personStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Bhavya Kashyap',
+    url: BASE_URL,
+    image: `${BASE_URL}/images/profile.png`,
+    sameAs: [
+        'https://www.linkedin.com/in/bhavya-kashyap/',
+        'https://github.com/Bhavya',
+        'https://x.com/bhavbhavbhav',
+        'https://www.tiktok.com/@madebybhavya',
+        'https://www.mithuna.capital/',
+    ],
+    knowsAbout: [
+        'Software engineering',
+        'Engineering leadership',
+        'Infrastructure',
+        'Developer platforms',
+        'Fintech',
+        'AI systems',
+        'Startups',
+    ],
 }
 
 interface RootLayoutProps {
@@ -94,18 +118,12 @@ interface RootLayoutProps {
 const RootLayout = ({ children }: RootLayoutProps) => {
     return (
         <html lang="en" suppressHydrationWarning>
-            <head>
-                <meta charSet="utf-8" />
-                <meta
-                    name="keywords"
-                    content="Bhavya, Kashyap, Full Stack Developer, Web Developer, Web Solutions, Portfolio, GitHub"
-                />
-
-                {/* lazy loading images */}
-                <script src="https://afarkas.github.io/lazysizes/lazysizes.min.js" async></script>
-            </head>
             <body className={inter.className}>
-                <ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(personStructuredData) }}
+                />
+                <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" disableTransitionOnChange>
                     {children}
                 </ThemeProvider>
                 <Analytics />

@@ -1,0 +1,81 @@
+---
+title: "AI agents are relearning what payments already learned"
+description: "What payment systems already know about uncertainty, idempotency, partial completion, authority, and reconciliation matters even more when agents can move money."
+tags:
+  - AI agents
+  - payments
+  - infrastructure
+date: "2026-09-27"
+---
+
+An agent submits a $5,000 supplier payment. The bank processes it, but the response never reaches the agent. If the agent retries with a new payment instruction, another $5,000 could leave the company. If it gives up and reports a failure, the finance team might arrange a second payment themselves.
+
+This can happen even when the decision to pay was correct. Carrying it out safely requires the system to handle uncertainty about what has already happened.
+
+I spent about five years as an engineering manager at Chime. That background shapes the questions I ask about agents taking on financial work, especially what happens after an error. Payments teams have spent decades building systems that can recover without losing track of the money.
+
+There are two kinds of action to account for. Credits, fee waivers, and balance adjustments can happen on your own ledger. Payouts, purchases, and transfers may also involve outside providers. A workflow can include both. Internal service calls can time out too, but with an outside provider, your own database can't establish whether the other system has committed the action.
+
+The infrastructure for agents to transact is already arriving. In May, [AWS previewed AgentCore Payments](https://aws.amazon.com/about-aws/whats-new/2026/04/amazon-bedrock-agentcore-payments-preview/), which lets agents pay for digital services within enforced spending limits. As agents gain access to more financial operations, I'd want the following practices built into the systems they use.
+
+## Handling an uncertain result
+
+For a vendor or seller payout through a bank API, a timeout leaves the result unresolved. The payment could have succeeded, failed, or still be in progress.
+
+The integration needs a defined way to recover. Depending on the provider, that might mean looking up the operation or retrying with the same idempotency key and unchanged request. If neither option can resolve the uncertainty safely, the operation should stay unresolved and be escalated for investigation.
+
+An agent shouldn't be able to turn “I don't know what happened” into a fresh instruction to move money. The system executing the transfer needs to enforce that distinction, including when another agent takes over the work.
+
+## Giving the operation a stable identity
+
+An idempotency key lets a provider recognize repeated attempts at the same operation. The application should create and store that identity before execution, then reuse it across retries and restarts.
+
+For an invoice payment, that means retaining the link between the approved payment and its attempts even if the model describes it differently on a later run. A newly generated memo shouldn't create a second payment. A changed amount or destination requires a new authorization decision.
+
+Some instructions produce several movements. A supplier payment might require funding the paying account first; a payout batch includes multiple recipients. Give each movement its own identifier linked to the approved instruction, so recovery can pick up the unfinished work.
+
+Provider guarantees have limits too. Stripe, for example, [can remove idempotency keys after at least 24 hours](https://docs.stripe.com/api/idempotent_requests). Your operation history needs to outlast the provider's retry window.
+
+## Recovering when only part of the work completed
+
+An agent processing an order reserves inventory and charges a card, then crashes before confirming the order. Starting over could create another charge or reservation. Recovery needs the identities and outcomes of the steps already attempted.
+
+Save the authorized operation durably before execution, then record each step and its result. [Temporal's model](https://docs.temporal.io/workflow-definition) is a useful reminder of why external actions still need to be safe to retry: activities run outside the replay path and can be retried.
+
+The same issue appears when a supplier payment succeeds but the accounting update fails. Recovery should mark the invoice paid using the existing payment record. Restarting the entire task risks sending the money again.
+
+Cash reservations need care too: release funds only once the payment is known not to have been sent or has been definitively rejected. An unresolved payment may already have consumed those funds, so releasing them could allow them to be spent again.
+
+## Knowing what completion means
+
+An internal transfer within one ledger can post its debit and credit together in a database transaction. External payments have their own lifecycles. An ACH payment marked completed can still be returned, and a successful card charge can later become a dispute.
+
+The system needs to follow those later events and update its records and messages accordingly. An agent that submitted a payment should report the status it can establish, including any uncertainty about arrival.
+
+For a batch of payouts, track each recipient separately. Some payments may be complete while others need attention. Recovery should continue with the unresolved items.
+
+## Enforcing authority and balance constraints
+
+Consider a purchasing agent with a $10,000 budget. Two workers can each see that balance and each try to spend $8,000. The service executing purchases needs to check and reserve the budget atomically. Asking the model to remember the cap won't prevent that race.
+
+Authority matters beyond the amount. An agent might be allowed to move money between a company's own accounts but have no authority to send it to a new beneficiary. A support agent might be allowed to waive one eligible fee, without permission to make arbitrary balance adjustments.
+
+The executing service should check the source, destination, amount, currency, and permissions. Human approval needs to remain tied to those exact details across retries. Treasury transfers may also need to leave enough in the source account for upcoming obligations.
+
+## Reconciling the records
+
+For agent-initiated payouts, match the expected movements and ledger entries against the bank's records. A batch may appear as one bank debit and many recipient payments. Fees or currency conversion can make a simple amount comparison insufficient.
+
+[Modern Treasury separates completion from reconciliation](https://docs.moderntreasury.com/platform/re/reference/payment-orders): its completed event reflects bank execution, while a separate reconciled event reports the match to a posted transaction. Those are different facts for an agent to act on.
+
+The [CFPB's case against Synapse](https://www.consumerfinance.gov/enforcement/actions/synapse-financial-technologies-inc/) shows the cost of inadequate records. The bureau alleged that Synapse failed to maintain accurate records of consumer funds and ensure they matched its partner banks'. The banks identified a $60 million to $90 million shortfall, and consumers lost access to their money for weeks or months.
+
+Internal actions need checks too. A fee waiver or account credit should have the corresponding ledger entries even when no money moves through a bank. Differences need an owner who can correct the books, trace a transfer, or investigate with the provider.
+
+## Bringing this into agent systems
+
+These problems exist in conventional financial software too. Agents add another place where an instruction can be reinterpreted, regenerated after an error, or handed to a different worker. The authorization and operation history need to remain consistent through those changes.
+
+That gives someone investigating an incident a record they can follow from the original instruction to the actual movement and the books, including the steps that still need attention.
+
+For teams putting agents into financial workflows, how are you dividing that responsibility between the agent framework, the payment services, and the ledger? Which parts are already handled well, and where are you still having to build the missing pieces?

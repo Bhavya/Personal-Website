@@ -1,0 +1,23 @@
+# Bhavya Kashyap
+
+Bhavya Kashyap's personal website.
+
+## About
+
+Bhavya has worked across software engineering, product, and engineering leadership, with a focus on infrastructure, platforms, developer systems, and fintech. Her background includes Chime, Cocoon, Amazon, Microsoft, and Facebook.
+
+She writes about technology, systems, AI, startups, payments, and other subjects she is curious about.
+
+## Main pages
+
+- Home: https://bhavyakashyap.com/
+- Writing: https://bhavyakashyap.com/blog/
+- Links: https://bhavyakashyap.com/links/
+- Mithuna Capital: https://www.mithuna.capital/
+- Settlement: https://www.withsettlement.com/
+
+## Current projects
+
+- Settlement: reliable execution for AI agents that can move money and take real-world actions.
+- DealMemo: a lightweight diligence tool for angel investors.
+- Embermere: a cosy narrative game about ghosts, small towns, and secrets.

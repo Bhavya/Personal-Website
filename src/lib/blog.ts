@@ -16,7 +16,7 @@ export type BlogFrontmatter = {
     title: string
     description: string
     tags: string[]
-    image: string
+    image?: string
     date: string
 }
 
