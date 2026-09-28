@@ -1,0 +1,43 @@
+---
+title: "More fun with JS: Hacking away shallow copy issues"
+description: "A small JavaScript hack I used for cloning arrays."
+tags:
+  - JavaScript
+  - programming
+  - web development
+date: "2012-11-10"
+---
+
+*Originally posted November 10, 2012 on bhavyakashyap.me.*
+
+For those of you who have ever tried to copy an array in JavaScript, you’ll know that your “copy” basically just retains references to the original array, meaning any operations you perform on the copy are also performed on the original (`push()`ing and `pop()`ing, etc.). Generally, this type of copying is referred to as shallow copying. For example:
+
+~~~js
+var d = [];
+d.push("Woo!");
+var e = d;
+e.pop(); // Returns "Woo!"
+d.pop(); // undefined
+~~~
+
+The opposite to this is a deep copy, where after the copy is done, the copy and the original are no longer dependent on each other since they are separate objects. Now, I could be cool and paste a bunch of code showing you how to traverse nested objects and return a new object, but I am lazy, so this has been my solution for the last little while:
+
+~~~js
+Array.prototype.clone = function() {
+    return JSON.parse(JSON.stringify(this));
+}
+~~~
+
+Since stringifying returns a new string object, and parsing returns another object in turn, you’re in the clear. It can be a little expensive depending on the size and complexity of the array, but with this extension, you can do some fancy stuff, like:
+
+~~~js
+var d = [];
+d.push("Woo!");
+var e = d.clone();
+e.pop(); // Returns "Woo!"
+d.pop(); // Also returns "Woo!"
+~~~
+
+Caveats: this solution is not the ideal one, even though it works really well for my purposes. The first thing you have probably noticed is that I extended the default array object, which is generally a no-no, but for the sake the example I’m letting it be (I currently have the clone() function as a util function in my module class so as to not modify any behaviour on the rest of the page; this is really how it should be done). The second issue here is a problem i discussed in my previous post about objects not being stringifyable due to circular references.
+
+Thus this wouldn’t work with very complex objects (that aren’t necessarily being treated as arrays). Having said that, enjoy the hack; hope it saves a headache or two out there.
