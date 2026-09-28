@@ -1,0 +1,54 @@
+---
+title: "KEDA gets more interesting in the accelerator era"
+description: "KEDA does not manage GPUs. That may be exactly why it fits the next generation of accelerator-heavy Kubernetes clusters."
+tags:
+  - Kubernetes
+  - KEDA
+  - GPUs
+  - infrastructure
+date: "2026-09-27"
+---
+
+I used to think of KEDA pretty narrowly: it was the thing you reached for when CPU and memory were the wrong autoscaling signals.
+
+That is still true. But I think it gets more interesting as Kubernetes becomes better at managing GPUs and other accelerators.
+
+The important distinction is that KEDA does not decide which GPU a workload should get. It decides how much work should exist based on demand.
+
+That separation matters.
+
+For a normal web service, CPU can be a decent proxy for load. For accelerator-backed systems, it often is not. A GPU can be busy for the wrong reasons, underutilized while requests pile up elsewhere, or expensive enough that keeping idle replicas around is painful.
+
+The signal you actually care about may be request backlog, tokens waiting, batch depth, model-specific latency, messages in a queue, or some application-level measure of work that has not been processed yet.
+
+KEDA is already built around that model. A [ScaledObject](https://keda.sh/docs/2.21/concepts/scaling-deployments/) can turn external demand into replica count, and a [ScaledJob](https://keda.sh/docs/2.21/concepts/scaling-jobs/) can create work for queue-driven or long-running tasks. KEDA also supports external scalers, so the signal does not need to be one of the built-in integrations.
+
+People are already experimenting with this for GPUs. A recent CNCF post showed a KEDA external scaler using GPU utilization, memory, temperature, and power as inputs for GPU-backed workloads. That is useful, but I think the bigger opportunity is to scale on signals closer to the actual work being requested, then let the infrastructure layer decide how to satisfy it.
+
+That infrastructure layer is getting much better.
+
+Kubernetes Dynamic Resource Allocation is now stable, and recent releases have added richer ways to describe and allocate accelerator resources. Workloads can ask for devices through classes and claims instead of treating every accelerator as a generic integer. Kubernetes 1.36 added features like prioritized device requests and partitionable devices, and 1.37 moved DRA extended resource support to GA.
+
+So the control loop starts to look like this:
+
+**Application demand → KEDA → Pods or Jobs → scheduler / DRA → accelerator capacity**
+
+Then a node lifecycle manager such as Karpenter can provision nodes when those Pods cannot be scheduled with the hardware already available.
+
+That gives us two different scaling problems instead of one giant one.
+
+KEDA can answer, “How much work should I be running?”
+
+The scheduler, DRA, device drivers, and node provisioner can answer, “What hardware should run it, and where do I get that hardware?”
+
+That opens up some genuinely useful patterns.
+
+An inference service could scale on queued requests instead of CPU. A batch system could create one GPU job per unit of work and fall back across accelerator classes when the preferred hardware is unavailable. A low-traffic model could scale all the way to zero, which then gives the node layer permission to consolidate expensive accelerator capacity. Different services could also use completely different demand signals without forcing the hardware management layer to understand application semantics.
+
+This gets even more interesting as clusters stop being “some CPUs plus a few identical GPUs” and start looking like collections of different accelerators, memory profiles, partitions, and specialized chips.
+
+KEDA will not solve topology-aware multi-node training, gang scheduling, device placement, or accelerator allocation. Those belong lower in the stack, with schedulers, DRA, queueing systems, and device managers.
+
+But that is why I like the fit.
+
+KEDA can stay focused on demand. The hardware layer can stay focused on resources. As accelerator clusters get more heterogeneous, that boundary gives us a cleaner place to build much more interesting autoscaling policies.
