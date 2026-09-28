@@ -2,72 +2,68 @@ import { Layout } from '@/components/layout'
 import { contact } from '@/data'
 import { BASE_URL } from '@/config'
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import NextLink from 'next/link'
 
 export const metadata: Metadata = {
     title: 'Links',
-    description: 'Links to Bhavya Kashyap around the web, plus current projects and writing.',
+    description: 'Find Bhavya Kashyap around the web.',
     alternates: {
         canonical: '/links',
     },
     openGraph: {
         title: 'Links | Bhavya Kashyap',
-        description: 'Links to Bhavya Kashyap around the web, plus current projects and writing.',
+        description: 'Find Bhavya Kashyap around the web.',
         url: `${BASE_URL}/links`,
         type: 'website',
     },
 }
 
-const siteLinks = [
-    { label: 'Home', href: '/', internal: true },
-    { label: 'Blog', href: '/blog', internal: true },
-    { label: 'Mithuna Capital', href: 'https://www.mithuna.capital/' },
+const links = [
+    { label: 'Website', href: '/', internal: true },
+    { label: 'Writing', href: '/blog', internal: true },
     { label: 'Settlement', href: 'https://www.withsettlement.com/' },
+    { label: 'Mithuna Capital', href: 'https://www.mithuna.capital/' },
 ]
+
+const linkClassName =
+    'group flex min-h-14 w-full items-center justify-between border border-border bg-card/35 px-5 py-4 text-left transition-colors hover:border-primary/50 hover:bg-card/70'
 
 const LinksPage = () => {
     return (
         <Layout className="space-y-0">
-            <section className="py-14 sm:py-20">
-                <h1 className="font-serif text-5xl font-normal tracking-[-0.04em] sm:text-7xl">Links.</h1>
-                <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground">
-                    A few places to find me and the things I’m working on.
-                </p>
-            </section>
+            <section className="mx-auto flex w-full max-w-xl flex-col items-center py-14 text-center sm:py-20">
+                <Image
+                    src="/images/profile.png"
+                    alt="Bhavya Kashyap"
+                    width={112}
+                    height={112}
+                    className="size-28 rounded-full border border-border object-cover"
+                    priority
+                />
 
-            <section className="editorial-section">
-                <div className="editorial-label">Around the web</div>
-                <div>
+                <h1 className="mt-5 font-serif text-3xl font-normal tracking-[-0.03em]">Bhavya Kashyap</h1>
+
+                <div className="mt-5 flex items-center justify-center gap-4">
                     {contact.map((item) => (
                         <a
                             key={item.label}
                             href={item.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group flex items-center justify-between border-t border-border/70 py-5 first:border-t-0 first:pt-0"
+                            aria-label={item.label}
+                            className="grid size-10 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
                         >
-                            <span className="font-serif text-2xl group-hover:underline group-hover:underline-offset-4">
-                                {item.label}
-                            </span>
-                            <span className="text-sm text-muted-foreground">↗</span>
+                            <span className={`${item.icon} text-xl`} aria-hidden="true" />
                         </a>
                     ))}
                 </div>
-            </section>
 
-            <section className="editorial-section">
-                <div className="editorial-label">Here too</div>
-                <div>
-                    {siteLinks.map((item) =>
+                <div className="mt-10 w-full space-y-3">
+                    {links.map((item) =>
                         item.internal ? (
-                            <NextLink
-                                key={item.label}
-                                href={item.href}
-                                className="group flex items-center justify-between border-t border-border/70 py-5 first:border-t-0 first:pt-0"
-                            >
-                                <span className="font-serif text-2xl group-hover:underline group-hover:underline-offset-4">
-                                    {item.label}
-                                </span>
+                            <NextLink key={item.label} href={item.href} className={linkClassName}>
+                                <span className="font-medium">{item.label}</span>
                                 <span className="text-sm text-muted-foreground">→</span>
                             </NextLink>
                         ) : (
@@ -76,11 +72,9 @@ const LinksPage = () => {
                                 href={item.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="group flex items-center justify-between border-t border-border/70 py-5 first:border-t-0 first:pt-0"
+                                className={linkClassName}
                             >
-                                <span className="font-serif text-2xl group-hover:underline group-hover:underline-offset-4">
-                                    {item.label}
-                                </span>
+                                <span className="font-medium">{item.label}</span>
                                 <span className="text-sm text-muted-foreground">↗</span>
                             </a>
                         ),

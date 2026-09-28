@@ -4,6 +4,7 @@ import { BASE_URL } from '@/config'
 import { getBlogData, getBlogList } from '@/lib/blog'
 import dayjs from 'dayjs'
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import NextLink from 'next/link'
 import { notFound } from 'next/navigation'
 
@@ -54,8 +55,9 @@ const BlogPostPage = async ({ params }: BlogPostPageProps) => {
     }
 
     const { metadata, content } = blog
-    const { title, description, tags, date } = metadata
+    const { title, description, tags, date, image } = metadata
     const url = `${BASE_URL}/blog/${slug}`
+    const preview = image ? (image.startsWith('http') ? image : `${BASE_URL}${image}`) : undefined
 
     const articleStructuredData = {
         '@context': 'https://schema.org',
@@ -65,6 +67,7 @@ const BlogPostPage = async ({ params }: BlogPostPageProps) => {
         datePublished: date,
         dateModified: date,
         mainEntityOfPage: url,
+        ...(preview ? { image: preview } : {}),
         author: {
             '@type': 'Person',
             name: 'Bhavya Kashyap',
@@ -101,6 +104,24 @@ const BlogPostPage = async ({ params }: BlogPostPageProps) => {
                         <ShareButton title={title} text={description} url={url} />
                     </div>
                 </header>
+
+                {image &&
+                    (image.startsWith('http') ? (
+                        <img
+                            src={image}
+                            alt=""
+                            className="mt-10 aspect-[16/9] w-full border border-border object-cover"
+                        />
+                    ) : (
+                        <Image
+                            src={image}
+                            alt=""
+                            width={1400}
+                            height={788}
+                            className="mt-10 aspect-[16/9] w-full border border-border object-cover"
+                            priority
+                        />
+                    ))}
 
                 <div
                     className="prose prose-zinc mt-10 max-w-none prose-headings:font-serif prose-headings:font-normal prose-headings:tracking-tight prose-a:text-primary prose-p:leading-8 dark:prose-invert"
