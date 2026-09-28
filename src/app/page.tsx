@@ -169,7 +169,7 @@ const HomePage = async () => {
                 <section className="border-t border-border py-10 md:py-12">
                     <div className="editorial-label mb-5">Other stuff</div>
 
-                    <div className="border-t border-border/70 py-5 first:border-t-0 first:pt-0">
+                    <div className="py-4 first:pt-0">
                         <div className="editorial-label mb-3">Patent</div>
                         <a
                             href="https://patents.google.com/patent/US20180121101A1/en"
@@ -186,7 +186,7 @@ const HomePage = async () => {
                         </a>
                     </div>
 
-                    <div className="border-t border-border/70 py-5">
+                    <div className="py-4">
                         <div className="editorial-label mb-3">Professional</div>
                         <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
                             <a
@@ -219,7 +219,7 @@ const HomePage = async () => {
                         </div>
                     </div>
 
-                    <div className="border-t border-border/70 py-5">
+                    <div className="py-4">
                         <div className="editorial-label mb-3">Investing</div>
                         <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
                             <a
