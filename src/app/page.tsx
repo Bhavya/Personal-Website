@@ -190,13 +190,13 @@ const HomePage = async () => {
                         <div className="editorial-label mb-3">Professional</div>
                         <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
                             <a
-                                href="https://www.bhavyakashyap.me/"
+                                href="https://web.archive.org/web/20250210095335/https://midwest.womenintechsummit.net/session/from-engineer-to-program-manager-and-back-how-switching-roles-gave-me-the-skills-to-be-a-technical-leader/"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="group block"
                             >
                                 <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
-                                    Speaking ↗
+                                    From Engineer to Program Manager and Back ↗
                                 </div>
                                 <p className="mt-1 text-sm leading-6 text-muted-foreground">
                                     Women in Tech Summit, Mid-Atlantic and Mid-West, 2019.
