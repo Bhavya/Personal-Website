@@ -167,20 +167,63 @@ const HomePage = async () => {
                 </section>
 
                 <section className="border-t border-border py-10 md:py-12">
-                    <div className="editorial-label mb-5">Elsewhere</div>
-                    <div>
-                        <h2 className="mb-5 font-serif text-3xl font-normal tracking-tight">One more thing.</h2>
+                    <div className="editorial-label mb-5">Other stuff</div>
+                    <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
                         <a
                             href="https://www.mithuna.capital/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="editorial-link font-serif text-2xl"
+                            className="group block"
                         >
-                            Mithuna Capital ↗
+                            <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
+                                Mithuna Capital ↗
+                            </div>
+                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                My angel investing and advising.
+                            </p>
                         </a>
-                        <p className="mt-3 text-sm text-muted-foreground">
-                            I do my angel investing and advising through Mithuna Capital.
-                        </p>
+
+                        <a
+                            href="https://www.mindwareanalytics.ai/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group block"
+                        >
+                            <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
+                                Mindware Analytics ↗
+                            </div>
+                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                My dad’s analytics and AI consultancy.
+                            </p>
+                        </a>
+
+                        <a
+                            href="https://www.bhavyakashyap.me/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group block"
+                        >
+                            <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
+                                Speaking ↗
+                            </div>
+                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                Women in Tech Summit, Mid-Atlantic and Mid-West, 2019.
+                            </p>
+                        </a>
+
+                        <a
+                            href="https://careers.chime.com/life-at-chime/its-a-chimed-life-meet-bhavya-kashyap/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group block"
+                        >
+                            <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
+                                Chime profile ↗
+                            </div>
+                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                A profile about my path through engineering, product, and leadership.
+                            </p>
+                        </a>
                     </div>
                 </section>
             </div>
