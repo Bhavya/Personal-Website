@@ -1,0 +1,48 @@
+---
+title: "Device Events with Javascript: Detecting a Shake"
+description: "Experimenting with the Device Motion Event API to detect a shake in a mobile web app."
+tags:
+  - JavaScript
+  - mobile
+  - web development
+date: "2011-03-27"
+---
+
+*Originally posted March 27, 2011 on bhavyakashyap.me.*
+
+My most recent endeavours have been greatly associated with mobile web development. It’s fun stuff, especially looking at the kinds of support provided by HTML5 and a lot of the new Javascript interfaces. In an attempt to test the waters, I was trying to write a mobile Eight Ball application, and so I was looking at the Device Motion Event API supplied by W3 to give me some insight on how to detect a “shake” event.
+
+Their API spec was useful, but I did end up running into a problem where nearly any change in acceleration would trigger my `eightBall()` event. I finally realised that the better way to go about it would be this:
+
+~~~js
+if (typeof window.DeviceMotionEvent != 'undefined') {
+    // Shake sensitivity (a lower number is more)
+    var sensitivity = 16;
+
+    // Position variables
+    var x1 = 0, y1 = 0, z1 = 0, x2 = 0, y2 = 0, z2 = 0;
+
+    // Listen to motion events and update the position
+    window.addEventListener('devicemotion', function (e) {
+        x1 = e.accelerationIncludingGravity.x;
+        y1 = e.accelerationIncludingGravity.y;
+        z1 = e.accelerationIncludingGravity.z;
+    }, false);
+
+    // Periodically check the position and fire
+    // if the change is greater than the sensitivity
+    setInterval(function () {
+        var change = Math.abs(x1-x2+y1-y2+z1-z2);
+        if (change > sensitivity) {
+            eightBall();
+        }
+
+        // Update new position
+        x2 = x1;
+        y2 = y1;
+        z2 = z1;
+    }, 200);
+}
+~~~
+
+This works rather effectively in most established mobile browsers (mobile IE does not count). I find a lower sensitivity and a longer time interval to be more accurate to how vigorously and how long a human would actually shake a mobile device.
