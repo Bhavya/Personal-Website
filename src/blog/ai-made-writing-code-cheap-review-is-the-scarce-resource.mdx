@@ -1,0 +1,35 @@
+---
+title: "AI made writing code cheap. Review is the scarce resource."
+description: "Coding agents can produce more changes than a team can thoughtfully absorb. Engineering leaders need to design for verification."
+tags:
+  - AI
+  - engineering management
+  - software engineering
+date: "2026-09-28"
+---
+
+I can now ask an agent to implement an idea and come back to a pull request. That's useful. It also means I can create work for a reviewer much faster than I could before.
+
+The limiting factor in a software team is shifting. Producing a first draft of the code is getting cheaper. Deciding whether that code belongs in the system still takes context, judgment, and attention.
+
+A [study of 278,790 review conversations](https://arxiv.org/abs/2603.15911) across open-source projects found that human reviewers exchanged 11.8% more rounds on AI-generated code than on human-written code. That's one study, and open-source review is not every company's workflow. But the direction makes sense to me. A plausible implementation can still miss the reason a system works the way it does.
+
+## The review queue is a product of the system
+
+Imagine five engineers each using agents to produce twice as many pull requests. If the team still has the same two people who understand the tricky parts of the architecture, those people become the queue. The team may report more code written while changes spend longer waiting, or while reviewers skim to keep up.
+
+Neither outcome is a win.
+
+I don't think the answer is to ask senior engineers to read faster. It's to make the changes easier to evaluate. A pull request should say what behavior is meant to change, what constraints matter, how it was tested, and what could break. Smaller changes help, but only when each one has a coherent purpose. Ten tiny PRs with a hidden dependency between them can be harder to review than one clear change.
+
+Tests and static checks can take some work off the human reviewer. They cannot decide whether a new abstraction fits the product, whether an edge case matters to customers, or whether a migration will be safe in production. Those questions need the right person and enough time.
+
+## Move judgment earlier
+
+When an agent is given a vague request, the reviewer often ends up discovering the requirements at the end. That's an expensive place to do it.
+
+For consequential changes, I'd rather have the engineer specify the expected behavior, boundaries, and failure cases before implementation. Give the agent the existing patterns to follow. Require evidence for claims like “backward compatible” or “safe to retry.” Then use review to examine the decisions that remain, rather than reconstructing what the author intended from a diff.
+
+This also changes how I'd measure the benefit of coding agents. Lines written and pull requests opened tell me very little. I'd look at time from idea to a change safely running in production, review wait time, rework, incidents, and how often the same senior engineers are pulled into every decision.
+
+If code generation gets dramatically faster but verification stays fixed, the team hasn't gained as much capacity as the output graph suggests. The interesting management work is redesigning the path from generated code to trusted change.
