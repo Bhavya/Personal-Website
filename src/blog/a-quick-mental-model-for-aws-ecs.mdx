@@ -9,9 +9,9 @@ tags:
 date: "2019-03-19"
 ---
 
-I've been spending more time with AWS ECS lately, and the terminology is much more intimidating than the actual model. There are clusters, container instances, services, tasks, task definitions, repositories, target groups, and about twelve different places in the AWS console where all of these things seem to live. Once I stopped treating them as one giant ECS blob, it got a lot easier to understand.
+I've been spending more time with AWS ECS lately, and the terminology is much more intimidating than the actual model. There are clusters, container instances, services, tasks, task definitions, target groups, and a bunch of different places in the AWS console where all of these things seem to live. Once I stopped treating them as one giant ECS blob, it got a lot easier to understand.
 
-The simplest mental model I have is this: **a task definition describes what to run, a task is an actual running copy of that definition, and a service makes sure the number of tasks you asked for keeps running.** All of that happens inside a cluster. If you're using the EC2 launch type, the cluster has EC2 machines registered to it as container instances, and ECS decides which machine should run each task. AWS also has Fargate now, which lets you skip managing those EC2 instances yourself. citeturn853305search0turn853305search7
+The simplest mental model I have is this: a task definition describes what to run, a task is an actual running copy of that definition, and a service makes sure the number of tasks you asked for keeps running. All of that happens inside a cluster. If you're using the EC2 launch type, the cluster has EC2 machines registered to it as container instances, and ECS decides which machine should run each task. AWS also has Fargate now, which lets you skip managing those EC2 instances yourself.
 
 Here is roughly how I picture the EC2 version:
 
@@ -68,11 +68,11 @@ ECS Service
 Container  Container  Container
 ```
 
-The task definition is probably the most important object to understand first. It is basically the blueprint for a task. It tells ECS which Docker image to run, how much CPU and memory the containers need, which ports they expose, which environment variables they get, where logs go, and what IAM role the task should use. Registering a new task definition creates a new revision rather than changing the old one in place, which is useful because a service can be moved from one revision to another during a deployment. citeturn853305search5
+The task definition is probably the most important object to understand first. It is basically the blueprint for a task. It tells ECS which Docker image to run, how much CPU and memory the containers need, which ports they expose, which environment variables they get, where logs go, and what IAM role the task should use. Registering a new task definition creates a new revision rather than changing the old one in place, which is useful because a service can be moved from one revision to another during a deployment.
 
-A task is the running thing. One task can technically contain multiple containers that need to live together, although for a basic service I usually find it easier to think of one application container per task. The important distinction is that you normally do not care about a specific task for very long. Tasks die, deployments replace them, and services create new ones. The service is the durable object that says, "I want three copies of this task definition running." ECS tries to keep reality matching that desired state. citeturn853305search0
+A task is the running thing. One task can technically contain multiple containers that need to live together, although for a basic service I usually find it easier to think of one application container per task. The important distinction is that you normally do not care about a specific task for very long. Tasks die, deployments replace them, and services create new ones. The service is the durable object that says, "I want three copies of this task definition running." ECS tries to keep reality matching that desired state.
 
-Clusters are simpler than the name makes them sound. With the EC2 launch type, a cluster is basically the logical pool of EC2 capacity ECS can place tasks onto. Each EC2 instance runs the ECS agent, which talks to the ECS control plane and lets the scheduler know what resources are available. With Fargate, you still use a cluster, but AWS handles the machines underneath it, so the cluster becomes much more of a logical boundary. citeturn853305search2turn853305search7
+Clusters are simpler than the name makes them sound. With the EC2 launch type, a cluster is basically the logical pool of EC2 capacity ECS can place tasks onto. Each EC2 instance runs the ECS agent, which talks to the ECS control plane and lets the scheduler know what resources are available. With Fargate, you still use a cluster, but AWS handles the machines underneath it, so the cluster becomes much more of a logical boundary.
 
 For infrastructure I still prefer declaring this stuff in CloudFormation rather than creating it manually in the console. A very stripped-down Fargate service might look something like this. I'm using Fargate here mostly because it keeps the example focused on ECS itself rather than also needing an Auto Scaling group and ECS-optimized EC2 AMI.
 
@@ -160,7 +160,7 @@ Resources:
           TargetGroupArn: !Ref TargetGroupArn
 ```
 
-There are a couple of Fargate-specific things hiding in that template. Fargate tasks use `awsvpc` networking, which means each task gets networking in your VPC rather than sharing the host's network namespace. The task definition also has task-level CPU and memory values, and the service uses `LaunchType: FARGATE` instead of relying on EC2 container instances. Those were some of the main differences AWS called out when Fargate was introduced. citeturn853305search2turn853305search3
+There are a couple of Fargate-specific things hiding in that template. Fargate tasks use `awsvpc` networking, which means each task gets networking in your VPC rather than sharing the host's network namespace. The task definition also has task-level CPU and memory values, and the service uses `LaunchType: FARGATE` instead of relying on EC2 container instances. Those were some of the main differences AWS called out when Fargate was introduced.
 
 In a real stack, the VPC, subnets, security groups, Application Load Balancer, listener, target group, ECR repository, alarms, and autoscaling rules would probably be CloudFormation too. I left most of that out because it obscures the ECS relationship I'm actually trying to show. The container image can live in ECR, the task definition points at that image, the service points at the task definition, and the service runs tasks in the cluster.
 
@@ -168,4 +168,4 @@ One thing I initially found confusing is that ECS itself does not build your ima
 
 Deployments also make more sense once the objects are separated. A typical deployment can be: build a new image, push it to ECR, register a new revision of the task definition with the new image tag, and update the ECS service to use that revision. ECS then replaces the old tasks with new ones while trying to maintain the service's desired count and deployment health. There are more sophisticated ways to do this, but that basic sequence explains a lot of what is happening underneath the UI.
 
-The part I like about ECS is that it gives you an orchestrator without requiring you to operate quite as much machinery yourself. It is definitely very AWS-shaped, and there are still a lot of nouns, but the nouns are at least reasonably composable once you know what each one owns. For me, the useful shortcut is still: **definition describes it, task runs it, service keeps it running, cluster gives it somewhere to run.**
+What I like about ECS is that you get container orchestration without having to operate quite as much machinery yourself. It is definitely very AWS-shaped, and there are still a lot of nouns, but it gets a lot less confusing once you know what each piece is responsible for. For me, the useful shortcut is still: definition describes it, task runs it, service keeps it running, cluster gives it somewhere to run.
