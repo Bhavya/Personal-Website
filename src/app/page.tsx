@@ -212,6 +212,20 @@ const HomePage = async () => {
                         </a>
 
                                                 <a
+                            href="https://www.instagram.com/p/DI_pggBMZx6/?stkn=MzRlODBiNWFlZA=="
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group block"
+                        >
+                            <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
+                                Brown Girl Angels profile ↗
+                            </div>
+                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                An angel investor profile from Brown Girl Angels.
+                            </p>
+                        </a>
+
+                        <a
                             href="https://careers.chime.com/life-at-chime/its-a-chimed-life-meet-bhavya-kashyap/"
                             target="_blank"
                             rel="noopener noreferrer"
