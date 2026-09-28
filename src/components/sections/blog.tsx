@@ -21,7 +21,9 @@ export const Blog = ({ blogs, tag }: BlogSectionProps) => {
                 {blogs.map(({ slug, metadata }) => (
                     <NextLink
                         key={slug}
-                        href={`/blog/${slug}`}
+                        href={metadata.externalUrl || `/blog/${slug}`}
+                        target={metadata.externalUrl ? '_blank' : undefined}
+                        rel={metadata.externalUrl ? 'noreferrer' : undefined}
                         className="group grid gap-3 border-b border-border py-7 first:border-t sm:grid-cols-[1fr_auto] sm:gap-10"
                     >
                         <div>
@@ -31,6 +33,11 @@ export const Blog = ({ blogs, tag }: BlogSectionProps) => {
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
                                 {metadata.description}
                             </p>
+                            {metadata.originalSource && (
+                                <p className="mt-2 text-xs italic text-muted-foreground">
+                                    Originally posted on {metadata.originalSource}
+                                </p>
+                            )}
                             <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
                                 {metadata.tags.map((postTag) => (
                                     <span key={postTag}>{postTag}</span>
