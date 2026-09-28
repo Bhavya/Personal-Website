@@ -15,6 +15,29 @@ export const Blog = ({ blogs, tag }: BlogSectionProps) => {
                 <h1 className="font-serif text-5xl font-normal tracking-[-0.04em] sm:text-7xl">
                     {tag || 'Things I’ve been thinking about.'}
                 </h1>
+                {!tag && (
+                    <p className="mt-5 max-w-2xl text-sm leading-6 text-muted-foreground">
+                        This page also pulls in some older writing from{' '}
+                        <a
+                            href="https://www.bhavyakashyap.me/articles"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="underline underline-offset-4 hover:text-foreground"
+                        >
+                            my old site
+                        </a>
+                        ,{' '}
+                        <a
+                            href="https://medium.com/@bhavyakashyap"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="underline underline-offset-4 hover:text-foreground"
+                        >
+                            Medium
+                        </a>
+                        , and an old Tumblr that I think is lost to the internet.
+                    </p>
+                )}
             </div>
 
             <div>
