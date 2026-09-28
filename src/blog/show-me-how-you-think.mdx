@@ -1,0 +1,65 @@
+---
+title: "Show Me How You Think"
+description: "Why critical reasoning should be tested in interviews."
+tags:
+  - interviews
+  - engineering
+  - hiring
+  - critical thinking
+date: "2018-11-06"
+---
+
+*Originally posted November 6, 2018 on bhavyakashyap.me.*
+
+I was recently in an architecture design review with a new engineer- someone who was previously an intern described to me as action-oriented. The design she had proposed, which was put together quickly enough, was meant to migrate a set of services from one platform to another. In the purpose section of her document, she wrote just that (paraphrased, "the purpose of this design is to move services X from Framework Y to Framework Z").
+
+After reading the document, I asked a reasonable question: "Why exactly are we doing this?" She did not entirely understand, and repeated the purpose statement. In fact, I had to ask the question a few times before another engineer stepped in, stating that this needed to be done because Framework Z provided better support and documentation, was less prone to bugs, and had quicker response times to high severity issues. I replied, "That was the answer I was looking for." This is the difference between problem solving and critical thinking.
+
+## An Incomplete Picture
+
+While not remotely a bad contributor, the aforementioned engineer solved a problem but did not have the foresight to be critical about the issue. I'm not saying that this skill can't be learned, nor am I saying that she shouldn't have been hired - but you sometimes just have to stand back and ask what you may have missed with a hire if they are not 'getting it' the way you'd expect them to. What does lack of fit really mean? Could it have been caught during the interview process?
+
+The reality is that there is a disconnect between what we are testing for and what we are looking for. Without an analysis of this gap, it is hard to predict how a new hire, who may have aced an interview, might actually fare in the workplace. Let’s discuss our hypothetical ideal candidate. A quick poll of peers yielded these results.
+
+There are obvious trends- action-oriented, quick at problem solving, affable and eager to help, and so on. What do these attributes mean in the context of the workplace? The reality is that, action-oriented problem solvers don’t continually create solutions from scratch. They iterate on existing frameworks. They provide a critical eye, and are good at analyzing the output of those around them.
+
+So, how do we better select for individuals that do the above right from the start? Let’s examine the interview process. I will use software engineering as an example, since a more structured framework is used in evaluating a candidate. A software engineering interview typically includes the following areas of assessments:
+
+**Core technical principles.** Engineering fundamentals are tested, often by providing a puzzle-like problem that requires algorithms and data structures to solve.
+
+**System design.** This is meant to test a candidate's engineering creativity and their ability to deal with ambiguity and ask questions; it usually involves a scenario for which the candidate is expected to develop a solution from scratch.
+
+**Behavioural.** This is common to most interviews, agnostic of role, and involves talking about past experience and prior examples of leadership.
+
+This set of testing does not maximally simulate or represent the scope of the role being tested for. How often, on a daily basis, do software engineers perform breadth-first searches? How often do they design products from scratch, by themselves? This is why some tech firms are moving towards the tactic of giving candidates 'homework', where they are given a few days to come up with a fully working solution to a problem, in addition to the other interviews outlined above. But real work is as much about collaboration as it is about skill.
+
+We have to ask ourselves: what does the team do on a daily basis, and how do we communicate that effectively in addition to providing a pitch? Who are the most successful individuals on the team, and what makes them successful?
+
+## A Proposal
+
+How can this be applied to the interview process? We can agree that we want to know how good a candidate is at evaluating existing solutions and the work of peers. Luckily, reviews can easily be simulated. I have done this in interviews that I have conducted at Microsoft, and it helped me understand the candidate in much more detail. Here is an example.
+
+> Interviewer: We have an online game that allows a lot of people to collaborate on a piece of art at once. The problem is that this particular game has become very popular, and we are struggling to keep up due to scale. We also want to provide users with a polished and smooth experience, and we want this shipped by summer break. Here is a sample of someone’s existing design/process. Do you see anything wrong with it? What follow up questions would you ask?
+
+Assuming a 40 minute interview, the document that follows can contain anything relevant to the interviewee’s role. Perhaps it’s a technical architecture document, containing flow diagrams, code snippets, and technical descriptions. Perhaps it’s a set of timelines, numbers of people resources, and a Kanban board. Perhaps it’s the UI of the game, along with UX flows. Either way, it’s a review that’s meant to fill up the 40 minutes.
+
+So, what should the interviewer be looking for?
+
+- Reasoning through each decision, and questioning the sanity of the arguments. Are the decisions logical? Practical?
+- Determining and evaluating the side effects of these decisions.
+- Identifying the roles of the supplied data, and how they inform the decisions documented.
+- Proposing adjustments, and how the effects of those adjustments. Effective comparisons between the proposals and the existing solutions.
+
+Ultimately, the key here is that the candidate is evaluating the work of someone else- work that is unfamiliar. It is easy to be critical of the solution they have white-boarded. And it is trivial to solve a problem from scratch.
+
+## Additional Benefits
+
+But there is something else. The candidate will gain better insight into what the team does.
+
+## Room for Experimentation
+
+Most of what I have written stems from personal experience with interviewing. The interview process in itself is being iterated upon, and that’s great.
+
+As a community, we’ve recognized many of its flaws and are acting upon them, from attempting to address unconscious bias, to streamlining interviews with new technologies and platforms. I hope to see these strategies fully resolved in the near future. I appreciate strategy, but strategy can often end up being too amorphous for day-to-day work life. Turning these ideals into tactical steps that we can execute on in the moment is the start. This the motivation for what I have written, and I hope that it can be applied meaningfully in the building of new teams.
+
+*Please note that some details in this story have been changed in the interest of anonymity and keeping sensitive information private.*
