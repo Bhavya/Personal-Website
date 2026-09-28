@@ -9,23 +9,15 @@ tags:
 date: "2025-02-18"
 ---
 
-Redis is fast enough that teams can get away with bad habits for a surprisingly long time.
-
-That is part of what makes Redis anti-patterns annoying.
+Redis is fast enough that teams can get away with bad habits for a surprisingly long time. That is part of what makes Redis anti-patterns annoying.
 
 A design can look completely fine at low traffic. Reads are sub-millisecond. CPU is low. Memory is manageable. Nobody thinks very hard about the shape of the data because everything feels cheap.
 
-Then the workload grows, and suddenly the problem is not "Redis is slow." The problem is that an operation you thought was constant-ish is actually walking a huge object, hammering one key, expiring half the cache at once, or moving far more bytes than anyone realized.
-
-Most Redis incidents I’ve seen come down to some version of that.
+Then the workload grows, and suddenly the problem is not "Redis is slow." The problem is that an operation you thought was constant-ish is actually walking a huge object, hammering one key, expiring half the cache at once, or moving far more bytes than anyone realized. Most Redis incidents I’ve seen come down to some version of that.
 
 ## Giant values
 
-A single Redis command can be cheap in terms of command count and still be expensive in every way that matters.
-
-The classic example is a huge hash.
-
-A team starts with something reasonable:
+A single Redis command can be cheap in terms of command count and still be expensive in every way that matters. The classic example is a huge hash. A team starts with something reasonable:
 
 ```
 user:123 -> {
@@ -34,96 +26,62 @@ user:123 -> {
 }
 ```
 
-Then the object grows.
-
-More fields get added. More consumers reuse it. Eventually someone reaches for `HGETALL` because it is convenient, and now every read is pulling back an object that might be hundreds or thousands of fields long even when the caller only needs two of them.
+Then the object grows. More fields get added. More consumers reuse it. Eventually someone reaches for `HGETALL` because it is convenient, and now every read is pulling back an object that might be hundreds or thousands of fields long even when the caller only needs two of them.
 
 Redis is single-threaded for command execution. If one command has to do a lot of work, everything else waits behind it.
 
 The same problem shows up with giant strings, lists, sets, and sorted sets. "One key" does not mean "small."
 
-The useful question is not just how many operations you are doing.
-
-It is: **how much work does each operation force Redis to do, and how much data does it move over the network?**
+The useful question is not just how many operations you are doing. It is: **how much work does each operation force Redis to do, and how much data does it move over the network?**
 
 ## Hot keys
 
-A well-sharded Redis cluster can still behave like a single overloaded machine if most of the traffic goes to one key.
-
-This happens more often than people expect.
+A well-sharded Redis cluster can still behave like a single overloaded machine if most of the traffic goes to one key. This happens more often than people expect.
 
 Maybe one key contains configuration used by every request. Maybe there is a global counter. Maybe one tenant is dramatically larger than everyone else. Maybe a caching layer takes something naturally distributed and collapses it into a single shared object.
 
-The cluster can have plenty of spare capacity overall while one shard is melting.
+The cluster can have plenty of spare capacity overall while one shard is melting. That is why aggregate CPU can be misleading. Averages hide skew.
 
-That is why aggregate CPU can be misleading. Averages hide skew.
-
-If you have a hot key, the fix is usually not "add more Redis."
-
-You need to change the access pattern: shard the key, replicate the value somewhere appropriate, add a local cache, split one object into smaller ones, or stop making every request depend on the same piece of state.
+If you have a hot key, the fix is usually not "add more Redis." You need to change the access pattern: shard the key, replicate the value somewhere appropriate, add a local cache, split one object into smaller ones, or stop making every request depend on the same piece of state.
 
 ## Expiration cliffs
 
-TTLs are good.
-
-Thousands of keys expiring at the same second are less good.
-
-A common pattern is to populate a large batch of cache entries with the same TTL:
+TTLs are good. Thousands of keys expiring at the same second are less good. A common pattern is to populate a large batch of cache entries with the same TTL:
 
 ```
 SET thing:a ...
 EXPIRE thing:a 3600
 
 SET thing:b ...
-EXPIRE thing:b 3600
-
-SET thing:c ...
+EXPIRE thing:b 3600 SET thing:c ...
 EXPIRE thing:c 3600
 ```
 
-If those entries were created together, they will also disappear together.
+If those entries were created together, they will also disappear together. Now the cache misses arrive together.
 
-Now the cache misses arrive together.
+The database or downstream service gets slammed, every caller tries to rebuild the same data, and the system experiences a thundering herd that was technically caused by a perfectly reasonable one-hour TTL. Adding jitter is boring and extremely effective.
 
-The database or downstream service gets slammed, every caller tries to rebuild the same data, and the system experiences a thundering herd that was technically caused by a perfectly reasonable one-hour TTL.
-
-Adding jitter is boring and extremely effective.
-
-Instead of "expire in exactly one hour," use something like "expire sometime between 55 and 65 minutes."
-
-The point is not precision. The point is avoiding synchronization.
+Instead of "expire in exactly one hour," use something like "expire sometime between 55 and 65 minutes." The point is not precision. The point is avoiding synchronization.
 
 ## Treating SCAN like a free operation
 
-Most engineers know not to run `KEYS *` against a large production keyspace.
-
-Then they learn about `SCAN` and sometimes conclude that keyspace traversal is now safe.
+Most engineers know not to run `KEYS *` against a large production keyspace. Then they learn about `SCAN` and sometimes conclude that keyspace traversal is now safe.
 
 `SCAN` is safer because it is incremental. That does not make scanning millions of keys free.
 
-If you are regularly discovering application state by walking the entire Redis keyspace, that is usually a smell.
+If you are regularly discovering application state by walking the entire Redis keyspace, that is usually a smell. A keyspace is not an index.
 
-A keyspace is not an index.
-
-If the application needs to know which keys belong to some entity or category, it is often better to model that relationship explicitly rather than rediscovering it by scanning.
-
-Operational tooling occasionally needs `SCAN`. Application logic usually should not.
+If the application needs to know which keys belong to some entity or category, it is often better to model that relationship explicitly rather than rediscovering it by scanning. Operational tooling occasionally needs `SCAN`. Application logic usually should not.
 
 ## Unbounded collections
 
-Lists, sets, streams, and sorted sets are useful partly because Redis makes them so easy to work with.
-
-That convenience can hide the fact that nothing is trimming them.
+Lists, sets, streams, and sorted sets are useful partly because Redis makes them so easy to work with. That convenience can hide the fact that nothing is trimming them.
 
 A queue grows forever because consumers never delete old entries. A sorted set accumulates years of events. A per-user set keeps adding IDs but has no retention policy.
 
-Then someone runs an operation that was perfectly reasonable when the collection had 200 members and terrifying when it has 20 million.
+Then someone runs an operation that was perfectly reasonable when the collection had 200 members and terrifying when it has 20 million. Anything that can grow needs an answer to the question: **what bounds this?**
 
-Anything that can grow needs an answer to the question: **what bounds this?**
-
-That could be time, count, explicit cleanup, compaction, or moving old data somewhere else.
-
-"No bound" is still a design decision. It is just usually an accidental one.
+That could be time, count, explicit cleanup, compaction, or moving old data somewhere else. "No bound" is still a design decision. It is just usually an accidental one.
 
 ## Read-modify-write without thinking about concurrency
 
@@ -133,74 +91,40 @@ Another easy Redis trap looks like this:
 2. Change it in application code.
 3. Write it back.
 
-It works perfectly until two workers do it at the same time.
+It works perfectly until two workers do it at the same time. Both read 10.
 
-Both read 10.
+One adds 5. One subtracts 3.
 
-One adds 5.
+One writes 15. The other writes 7.
 
-One subtracts 3.
-
-One writes 15.
-
-The other writes 7.
-
-The correct answer was 12.
-
-Redis gives you atomic commands, transactions, Lua scripting, and other ways to avoid this. But teams still end up doing read-modify-write loops because they look simple in application code.
-
-If the correctness of an update depends on the previous value, concurrency needs to be part of the design from the beginning.
+The correct answer was 12. Redis gives you atomic commands, transactions, Lua scripting, and other ways to avoid this. But teams still end up doing read-modify-write loops because they look simple in application code. If the correctness of an update depends on the previous value, concurrency needs to be part of the design from the beginning.
 
 ## Using Redis as a database because it is already there
 
-This one is less about performance and more about boundaries.
+This one is less about performance and more about boundaries. A cache gradually becomes the only place some data exists.
 
-A cache gradually becomes the only place some data exists.
+Then persistence gets enabled. Then backups become important.
 
-Then persistence gets enabled.
+Then someone needs historical data. Then somebody asks whether a missed write can be reconstructed.
 
-Then backups become important.
+At some point, what started as "we already have Redis" has quietly become a primary datastore without anyone making that decision explicitly. Redis can absolutely be used as a primary data store for the right workloads.
 
-Then someone needs historical data.
-
-Then somebody asks whether a missed write can be reconstructed.
-
-At some point, what started as "we already have Redis" has quietly become a primary datastore without anyone making that decision explicitly.
-
-Redis can absolutely be used as a primary data store for the right workloads.
-
-The anti-pattern is not doing that.
-
-The anti-pattern is **arriving there accidentally**.
+The anti-pattern is not doing that. The anti-pattern is **arriving there accidentally**.
 
 Caches and systems of record have different failure assumptions. If losing the data would be a serious correctness problem, treat that as an architectural choice instead of an implementation detail.
 
 ## Connection count is a resource too
 
-Redis is fast enough that connection management can feel irrelevant until it is not.
+Redis is fast enough that connection management can feel irrelevant until it is not. A service scales out from 20 instances to 500. Each instance opens a pool of 50 connections. Suddenly you have 25,000 client connections before accounting for background workers, deploy overlap, health checks, failover behavior, or anything else.
 
-A service scales out from 20 instances to 500. Each instance opens a pool of 50 connections. Suddenly you have 25,000 client connections before accounting for background workers, deploy overlap, health checks, failover behavior, or anything else.
-
-This gets especially fun during an incident, when autoscaling can respond to latency by creating even more clients and making the problem worse.
-
-Connection pools should be sized deliberately.
-
-More connections do not automatically mean more throughput.
+This gets especially fun during an incident, when autoscaling can respond to latency by creating even more clients and making the problem worse. Connection pools should be sized deliberately. More connections do not automatically mean more throughput.
 
 ## The pattern underneath all of these
 
-The recurring mistake is treating Redis operations as uniformly cheap.
-
-They are not.
+The recurring mistake is treating Redis operations as uniformly cheap. They are not.
 
 A tiny GET from a well-distributed keyspace is very different from reading a multi-megabyte value from one hot shard. A bounded sorted-set query is different from walking a giant collection. Expiring keys gradually is different from expiring a million of them together.
 
-The command name does not tell you enough.
+The command name does not tell you enough. You need to understand the size of the data, the cardinality of the collection, the distribution of traffic, how the pattern changes with growth, and what happens when many callers do the same thing at once.
 
-You need to understand the size of the data, the cardinality of the collection, the distribution of traffic, how the pattern changes with growth, and what happens when many callers do the same thing at once.
-
-That is the part I wish teams spent more time on during design reviews.
-
-Redis is extremely good at what it does.
-
-It is also very good at making a questionable design look fine for six months.
+That is the part I wish teams spent more time on during design reviews. Redis is extremely good at what it does. It is also very good at making a questionable design look fine for six months.
