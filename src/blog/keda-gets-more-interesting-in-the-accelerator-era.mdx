@@ -1,0 +1,46 @@
+---
+title: "KEDA gets more interesting in the accelerator era"
+description: "KEDA could get a lot more useful as Kubernetes gets better at scheduling GPUs and other accelerators."
+tags:
+  - Kubernetes
+  - KEDA
+  - GPUs
+  - infrastructure
+date: "2026-09-24"
+---
+
+I used to think of KEDA as a useful answer to one pretty specific problem: CPU and memory are often bad signals for autoscaling.
+
+That still describes it. But the more I look at GPU-heavy clusters, the more I think KEDA is going to get a lot more useful.
+
+KEDA is not a GPU scheduler. It does not decide which accelerator a Pod gets or where that Pod should land. It helps answer a simpler question: how much work should we be running right now?
+
+For a normal web service, CPU might be good enough. For inference or batch workloads, the thing you actually care about could be requests waiting, tokens waiting, queue depth, latency, or jobs that have not started yet.
+
+KEDA already works well with that kind of signal. [ScaledObjects](https://keda.sh/docs/2.21/concepts/scaling-deployments/) can scale Deployments and StatefulSets from external events and metrics. [ScaledJobs](https://keda.sh/docs/2.21/reference/scaledjob-spec/) can create Jobs as work shows up. If the signal you want is not built in, KEDA also supports [external scalers](https://keda.sh/docs/2.21/scalers/external/).
+
+People are already trying this with GPUs. A recent [CNCF post](https://www.cncf.io/blog/2026/05/27/gpu-autoscaling-on-kubernetes-with-keda-building-an-external-scaler/) used a KEDA external scaler to scale on GPU utilization, memory, temperature, and power draw.
+
+I think the more interesting version is when KEDA scales on the work itself, and the cluster handles the hardware underneath it.
+
+That second part is getting better quickly. Kubernetes [Dynamic Resource Allocation](https://kubernetes.io/docs/concepts/resource-management/dynamic-resource-allocation/) is now stable and gives the cluster a richer way to describe and allocate devices such as accelerators. Kubernetes 1.37 also made DRA-backed extended resources generally available, so workloads can keep asking for familiar resources like GPUs while DRA handles the allocation underneath.
+
+A node provisioner such as Karpenter can handle another part of the problem by adding capacity when the cluster cannot place the workloads it already has.
+
+So I would not make KEDA understand the whole accelerator stack. I would let it stay focused on demand.
+
+The application knows whether there is work piling up. KEDA can turn that into more or fewer Pods and Jobs. Kubernetes can figure out which hardware can run them. The node layer can decide whether more machines need to exist.
+
+## Where this gets fun
+
+An inference service could scale on requests waiting instead of CPU. A batch system could create GPU Jobs as items arrive instead of keeping workers sitting around. A model with sporadic traffic could scale to zero and let expensive GPU nodes disappear when there is nothing to do.
+
+It also gets more useful as clusters become less uniform. We are moving toward environments with different GPU models, partitions, memory sizes, and other accelerators rather than one big pool of interchangeable hardware.
+
+KEDA does not need to understand all of that. It can ask for more work to run. The lower layers can decide how to place it.
+
+There are still hard problems below that boundary. Multi-node training, gang scheduling, topology, device placement, and accelerator allocation are not things KEDA solves.
+
+But that is kind of the point.
+
+KEDA can stay simple while the hardware layer gets much more sophisticated. I think that gives us a pretty nice way to build autoscaling around what the application actually needs instead of trying to make one layer understand everything.
