@@ -4,72 +4,70 @@
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 240 10% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 240 10% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 240 10% 3.9%;
-        --primary: 221.2 83.2% 53.3%;
-        --primary-foreground: 210 40% 98%;
-        --secondary: 240 4.8% 95.9%;
-        --secondary-foreground: 240 5.9% 10%;
-        --muted: 240 4.8% 95.9%;
-        --muted-foreground: 240 3.8% 46.1%;
-        --accent: 240 4.8% 95.9%;
-        --accent-foreground: 240 5.9% 10%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 240 5.9% 90%;
-        --input: 240 5.9% 90%;
-        --ring: 240 5.9% 10%;
-        --radius: 0.5rem;
-
-        --prism-bg-title: #dadadd;
-        --prism-fg-default: #18181b;
-        --prism-bg-code-block: #f4f4f5;
-        --prism-bg-inline-code-block: rgb(175 184 193 / 20%);
-        --prism-gray: #6e7781;
-        --prism-red: #cf222e;
-        --prism-green: #116329;
-        --prism-blue: #0550ae;
-        --prism-indigo: #0a3069;
-        --prism-purple: #8250df;
-        --prism-brown: #953800;
-    }
-
-    .dark {
-        --background: 240 10% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 240 10% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 240 10% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        /* --primary: 221.2 83.2% 53.3%; Original */
-        --primary: 217 89% 68%; /* Adjusted to be more readable, Contrast Ratio = 7.15 : 1 (lighter) */
-        /* --primary-foreground: 210 40% 98%; Original */
-        --primary-foreground: 222 42% 6%; /* Adjusted to be more readable, Contrast Ratio = 7.15 : 1 (lighter) */
-        --secondary: 240 3.7% 15.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 240 3.7% 15.9%;
-        --muted-foreground: 240 5% 64.9%;
-        --accent: 240 3.7% 15.9%;
-        --accent-foreground: 0 0% 98%;
+        --background: 270 13% 5%;
+        --foreground: 280 20% 96%;
+        --card: 270 12% 7%;
+        --card-foreground: 280 20% 96%;
+        --popover: 270 12% 7%;
+        --popover-foreground: 280 20% 96%;
+        --primary: 258 90% 76%;
+        --primary-foreground: 270 25% 8%;
+        --secondary: 270 9% 12%;
+        --secondary-foreground: 280 15% 93%;
+        --muted: 270 9% 12%;
+        --muted-foreground: 275 7% 64%;
+        --accent: 270 9% 13%;
+        --accent-foreground: 280 15% 93%;
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 0 0% 98%;
-        --border: 240 3.7% 15.9%;
-        --input: 240 3.7% 15.9%;
-        --ring: 240 4.9% 83.9%;
+        --border: 270 9% 16%;
+        --input: 270 9% 16%;
+        --ring: 258 90% 76%;
+        --radius: 0.5rem;
 
-        --prism-bg-title: #242429;
-        --prism-fg-default: #f4f4f5;
-        --prism-bg-code-block: #18181b;
-        --prism-bg-inline-code-block: rgb(175 184 193 / 20%);
-        --prism-gray: #768390;
+        --prism-bg-title: #242129;
+        --prism-fg-default: #f4f1f7;
+        --prism-bg-code-block: #131116;
+        --prism-bg-inline-code-block: rgb(183 169 196 / 14%);
+        --prism-gray: #8f8797;
         --prism-red: #f47067;
         --prism-green: #8ddb8c;
         --prism-blue: #96d0ff;
-        --prism-indigo: #6cb6ff;
+        --prism-indigo: #b9a7ff;
+        --prism-purple: #dcbdfb;
+        --prism-brown: #f69d50;
+    }
+
+    .dark {
+        --background: 270 13% 5%;
+        --foreground: 280 20% 96%;
+        --card: 270 12% 7%;
+        --card-foreground: 280 20% 96%;
+        --popover: 270 12% 7%;
+        --popover-foreground: 280 20% 96%;
+        --primary: 258 90% 76%;
+        --primary-foreground: 270 25% 8%;
+        --secondary: 270 9% 12%;
+        --secondary-foreground: 280 15% 93%;
+        --muted: 270 9% 12%;
+        --muted-foreground: 275 7% 64%;
+        --accent: 270 9% 13%;
+        --accent-foreground: 280 15% 93%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 270 9% 16%;
+        --input: 270 9% 16%;
+        --ring: 258 90% 76%;
+
+        --prism-bg-title: #242129;
+        --prism-fg-default: #f4f1f7;
+        --prism-bg-code-block: #131116;
+        --prism-bg-inline-code-block: rgb(183 169 196 / 14%);
+        --prism-gray: #8f8797;
+        --prism-red: #f47067;
+        --prism-green: #8ddb8c;
+        --prism-blue: #96d0ff;
+        --prism-indigo: #b9a7ff;
         --prism-purple: #dcbdfb;
         --prism-brown: #f69d50;
     }
@@ -89,6 +87,10 @@
 
     body {
         @apply bg-background text-foreground;
+        background-image:
+            linear-gradient(rgb(255 255 255 / 0.014) 1px, transparent 1px),
+            linear-gradient(90deg, rgb(255 255 255 / 0.012) 1px, transparent 1px);
+        background-size: 48px 48px;
     }
 
     /* prose */
@@ -486,4 +488,19 @@ pre[class*='language-'] {
 
 .token.namespace {
     opacity: 0.8;
+}
+
+
+@layer components {
+    .editorial-section {
+        @apply grid gap-5 border-t border-border py-10 md:grid-cols-[190px_1fr] md:gap-10 md:py-12;
+    }
+
+    .editorial-label {
+        @apply pt-1 text-[11px] uppercase tracking-[0.13em] text-muted-foreground;
+    }
+
+    .editorial-link {
+        @apply underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-primary;
+    }
 }
