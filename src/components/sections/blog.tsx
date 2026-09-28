@@ -1,15 +1,6 @@
-import { Typography } from '@/components/typography'
-import { AspectRatio } from '@/components/ui/aspect-ratio'
-import { badgeVariants } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
 import { BlogData } from '@/lib/blog'
 import dayjs from 'dayjs'
-import Image from 'next/image'
 import NextLink from 'next/link'
-import { Suspense } from 'react'
 
 export interface BlogSectionProps {
     blogs: BlogData[]
@@ -17,66 +8,38 @@ export interface BlogSectionProps {
 }
 
 export const Blog = ({ blogs, tag }: BlogSectionProps) => {
-    const heading = tag ? `📝 Blog: ${tag}` : '📝 Blog'
-    const articleCount = `${blogs.length} article${blogs.length > 1 && 's'}`
-
     return (
-        <section className="flex flex-col space-y-8 pb-20 pt-4">
-            <div className="flex items-center justify-between border-b pb-4">
-                <Typography variant="h2">{heading}</Typography>
-                <p className="text-sm">{articleCount}</p>
+        <section className="py-14 sm:py-20">
+            <div className="mb-12 border-b border-border pb-10">
+                <p className="editorial-label mb-4">{tag ? `Tagged: ${tag}` : 'Writing'}</p>
+                <h1 className="font-serif text-5xl font-normal tracking-[-0.04em] sm:text-7xl">
+                    {tag || 'Things I’ve been thinking about.'}
+                </h1>
             </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {blogs.map((blog) => {
-                    const { slug, metadata } = blog
-                    const { title, description, tags, image, date } = metadata
 
-                    return (
-                        <Card key={slug} className="flex flex-col">
-                            <CardHeader>
-                                <AspectRatio ratio={16 / 9} className="rounded-t-lg overflow-hidden w-full relative">
-                                    <Suspense fallback={<Skeleton className="w-full h-full" />}>
-                                        <Image
-                                            src={image}
-                                            alt={title}
-                                            className="object-cover w-full h-full"
-                                            width={500}
-                                            height={500}
-                                            priority
-                                        />
-                                    </Suspense>
-                                </AspectRatio>
-                                <CardTitle className="line-clamp-2 text-xl font-semibold leading-none tracking-tight">
-                                    {title}
-                                </CardTitle>
-                                <Separator className="my-2" />
-                                <p className="text-sm text-muted-foreground">{dayjs(date).format('MMMM D, YYYY')}</p>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <CardDescription className="line-clamp-3">{description}</CardDescription>
-                                <div className="flex flex-wrap gap-1">
-                                    {tags.map((tag) => (
-                                        <NextLink
-                                            key={tag}
-                                            href={`/blog/tag/${tag}`}
-                                            className={badgeVariants({ variant: 'secondary' })}
-                                        >
-                                            {tag}
-                                        </NextLink>
-                                    ))}
-                                </div>
-                            </CardContent>
-                            <CardFooter className="mt-auto">
-                                <NextLink href={`/blog/${slug}`}>
-                                    <Button className="gap-2" aria-label="Read More">
-                                        Read Full Article
-                                        <span className="icon-[tabler--arrow-narrow-right] size-4" />
-                                    </Button>
-                                </NextLink>
-                            </CardFooter>
-                        </Card>
-                    )
-                })}
+            <div>
+                {blogs.map(({ slug, metadata }) => (
+                    <NextLink
+                        key={slug}
+                        href={`/blog/${slug}`}
+                        className="group grid gap-3 border-b border-border py-7 first:border-t sm:grid-cols-[1fr_auto] sm:gap-10"
+                    >
+                        <div>
+                            <h2 className="font-serif text-2xl leading-snug tracking-tight sm:text-3xl group-hover:underline group-hover:underline-offset-4">
+                                {metadata.title}
+                            </h2>
+                            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                                {metadata.description}
+                            </p>
+                            <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                                {metadata.tags.map((postTag) => (
+                                    <span key={postTag}>{postTag}</span>
+                                ))}
+                            </div>
+                        </div>
+                        <time className="text-xs text-muted-foreground">{dayjs(metadata.date).format('MMM D, YYYY')}</time>
+                    </NextLink>
+                ))}
             </div>
         </section>
     )
