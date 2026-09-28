@@ -212,6 +212,20 @@ const HomePage = async () => {
                         </a>
 
                         <a
+                            href="https://patents.google.com/patent/US20180121101A1/en"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group block"
+                        >
+                            <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
+                                Smart Storage Policy ↗
+                            </div>
+                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                                A Microsoft patent filing I co-invented around automated storage management.
+                            </p>
+                        </a>
+
+                                                <a
                             href="https://careers.chime.com/life-at-chime/its-a-chimed-life-meet-bhavya-kashyap/"
                             target="_blank"
                             rel="noopener noreferrer"
