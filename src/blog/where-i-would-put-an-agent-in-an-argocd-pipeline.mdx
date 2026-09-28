@@ -1,6 +1,6 @@
 ---
 title: "Where I would put an agent in an Argo CD pipeline"
-description: "If an agent is going to make deployment changes, I would rather have it propose Git changes than give it credentials to production."
+description: "The important decision is not whether an agent can deploy. It is where the company chooses to put authority, review, and production access."
 tags:
   - AI agents
   - Argo CD
@@ -10,11 +10,11 @@ tags:
 date: "2026-07-30"
 ---
 
-I've been thinking about where agents actually belong in a deployment pipeline. The tempting version is to give an agent access to `kubectl`, an Argo CD token, or some internal deployment API and let it make changes directly. I think that puts the agent on the wrong side of the boundary.
+If I were deciding how a company should introduce agents into software delivery, I would start with a governance question before a tooling question: where do we actually want the agent to have authority? An agent can technically be given a kubeconfig, an Argo CD token, or access to an internal deployment API. That does not mean it should be. The architecture should assume that agents will sometimes misunderstand intent, produce an incomplete change, or make a locally reasonable decision that is wrong for the larger system.
 
-If the deployment system already uses GitOps, I would rather have the agent behave like a developer. It can read the request, inspect the repository and whatever operational context it is allowed to see, make a small change on a branch, and open a pull request. CI can validate the change, a human or policy gate can approve it, and Argo CD can remain responsible for turning the merged desired state into cluster state.
+For that reason, I would put the agent on the proposal side of the deployment boundary rather than the production side. In a GitOps environment, the agent can interpret a request, inspect the repository and the operational context it is allowed to see, propose a narrow change, and open a pull request. CI and policy systems validate the artifact, humans or automated approval rules decide whether it should merge, and Argo CD remains responsible for reconciling the approved desired state into the cluster. This is less about distrusting AI than it is about preserving a control model the organization already understands.
 
-The shape looks roughly like this:
+The architecture I would want looks roughly like this:
 
 ```text
 issue / alert / deployment request
@@ -49,9 +49,9 @@ issue / alert / deployment request
        Kubernetes cluster
 ```
 
-The important part is what is missing. The agent does not have a kubeconfig, it does not call `kubectl apply`, and it does not need permission to call `argocd app sync`. Argo CD already knows how to watch Git and reconcile the application after the desired state changes, so I would keep that responsibility there. The [Argo CD CI documentation](https://argo-cd.readthedocs.io/en/latest/user-guide/ci_automation/) explicitly treats updating Git as the normal deployment path, and an explicit sync call is unnecessary when automated synchronization is enabled.
+The strategic point is what is deliberately missing from the left half of that diagram. The agent does not have a kubeconfig, it does not call `kubectl apply`, and it does not need permission to call `argocd app sync`. Argo CD already knows how to watch Git and reconcile the application after the desired state changes, so I would keep execution inside that existing control plane. The [Argo CD CI documentation](https://argo-cd.readthedocs.io/en/latest/user-guide/ci_automation/) already treats updating Git as the normal deployment path, and an explicit sync call is unnecessary when automated synchronization is enabled.
 
-A simple Application for this pattern might look like this:
+At the implementation level, a simple Application for this pattern could look like this:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -80,9 +80,9 @@ spec:
       - ApplyOutOfSyncOnly=true
 ```
 
-I would probably start with `prune: false` for an agent-authored path unless I had a strong reason not to. Updating an image or changing a resource limit is one class of action; deciding that a resource should no longer exist is a different blast radius. Argo CD supports automatic pruning, but there is no reason every capability needs to be enabled just because it exists.
+I would probably start with `prune: false` for an agent-authored path unless there were a strong reason not to. Updating an image or changing a resource limit is one class of action; deciding that a resource should no longer exist is a different blast radius. That distinction matters at the policy level because one of the easiest mistakes in agent adoption is granting an entire capability just because the platform supports it.
 
-The config repository could stay boring:
+The config repository itself does not need to become more complicated because an agent is involved. I would prefer to keep the structure boring and make the agent operate inside an explicit surface area:
 
 ```text
 platform-config/
@@ -105,7 +105,7 @@ platform-config/
     validate-agent-diff.py
 ```
 
-For a normal deployment, the agent may only need to change an image reference:
+For a routine deployment, the agent may only need to change an image reference. That is a much easier action to reason about organizationally than granting a generic "deploy" permission because the proposed state is reviewable before anything reaches production:
 
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
@@ -120,11 +120,9 @@ images:
     newTag: 9f13c42
 ```
 
-That is a much easier agent action to reason about than "deploy version 9f13c42." The output is a normal Git diff, it can be reviewed before anything happens, and the exact state Argo CD will eventually see is visible to everybody else.
+I would also treat agent-created changes as a distinct trust class in CI. The point is not that an agent is inherently malicious. The point is that generation is cheap, so it is easy to produce a syntactically valid change whose blast radius is much larger than the request that triggered it. A company-wide agent strategy should define the kinds of changes agents are allowed to propose, not just the systems they can technically reach.
 
-I would also give agent-created pull requests a stricter CI path than ordinary application code. The point is not that an agent is inherently malicious. The point is that cheap generation makes it very easy to produce a syntactically valid change with a much larger blast radius than intended.
-
-For example, I would put a basic diff policy in front of the normal Kubernetes validation:
+For example, even a very small policy check can demonstrate the boundary:
 
 ```python
 # ci/validate-agent-diff.py
@@ -179,9 +177,9 @@ for filename in changed:
 print("agent diff is inside the allowed deployment surface")
 ```
 
-This is intentionally not a complete Kubernetes security policy. In a real environment I would rather express mature rules in an existing policy system, but even a small check illustrates the idea: the agent gets a defined change surface. It should not be able to turn "update the payments image" into "also modify a cluster role and create a privileged container."
+That is not meant to be a complete Kubernetes security policy. In a mature environment I would rather express durable rules in an existing policy system, but the principle is the important part: the agent gets a defined change surface. It should not be able to turn "update the payments image" into "also modify a cluster role and create a privileged container" just because both actions happen to be possible through the same repository.
 
-The corresponding GitHub Actions job can remain pretty conventional:
+The corresponding CI job can remain conventional, which is another reason I like this design. The organization does not have to invent a second deployment system for agent-authored changes; it can reuse the same validation machinery and add narrower controls where needed:
 
 ```yaml
 name: validate deployment change
@@ -222,9 +220,7 @@ jobs:
             -f /tmp/rendered.yaml
 ```
 
-I would still have normal tests, schema validation, policy checks, and probably environment-specific rules around this. The interesting part is that none of those checks have to understand how the agent reasoned. They only have to understand the artifact it produced.
-
-The agent workflow itself should have Git permissions, not deployment permissions. In the simplest version, it can create a branch and PR but cannot bypass branch protection:
+The agent workflow itself should have Git permissions, not deployment permissions. In the simplest version it can create a branch and a pull request, but it cannot bypass branch protection or directly mutate cluster state. That keeps the model replaceable and prevents the agent framework from becoming part of the production control plane:
 
 ```yaml
 name: deployment agent
@@ -274,13 +270,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
 ```
 
-I left the model-specific part inside `deployment_agent.py` on purpose. Whether that implementation uses one provider, an internal model, or a more elaborate tool-calling framework should not change the deployment trust model. The agent can be replaced without redesigning how production is protected.
+I left the model-specific implementation inside `deployment_agent.py` on purpose. Whether the company uses one model provider, an internal model, or a more elaborate tool-calling framework should not change the deployment trust model. If the AI layer can be swapped without redesigning production access, the architecture is less coupled to today's agent stack.
 
-If the agent needs operational context, I would separate read access from deploy access there too. GitHub Actions can use OIDC to obtain short-lived cloud credentials instead of storing long-lived keys, and that role can be limited to the metrics, logs, or metadata the agent needs to inspect. The [GitHub OIDC documentation](https://docs.github.com/en/actions/concepts/security/openid-connect) is useful here because the workflow identity can be constrained by repository and workflow claims instead of sharing a permanent AWS credential.
+The same separation applies when the agent needs operational context. GitHub Actions can use OIDC to obtain short-lived cloud credentials instead of storing long-lived keys, and the role can be limited to the metrics, logs, or metadata the agent needs to inspect. The [GitHub OIDC documentation](https://docs.github.com/en/actions/concepts/security/openid-connect) is useful here because the workflow identity can be constrained by repository and workflow claims rather than sharing a permanent AWS credential.
 
-There are some changes I would not let this flow merge automatically. Cluster-scoped RBAC, namespace deletion, CRDs, network policy changes, production database changes, and anything that materially expands privileges should probably require a different approval path. The fact that an agent produced a good explanation for a change does not reduce the blast radius of the change itself.
+I would also make the approval model risk-based rather than treating every agent-authored change the same way. Image updates and bounded configuration changes may eventually be good candidates for automatic approval if the organization has enough confidence in its tests and policy layer. Cluster-scoped RBAC, namespace deletion, CRDs, network policy changes, production database changes, and anything that materially expands privileges should have a different path. The company should decide those boundaries deliberately rather than letting the agent framework define them by accident.
 
-For multi-step deployments, I would also keep sequencing declarative where possible instead of teaching the agent an imperative runbook. Argo CD already supports hooks and sync phases, so a migration that really must happen before the application rollout can be represented as a `PreSync` Job:
+For multi-step deployments, I would keep sequencing declarative where possible instead of teaching the agent an imperative production runbook. Argo CD already supports hooks and sync phases, so a migration that must happen before an application rollout can remain part of the declared deployment:
 
 ```yaml
 apiVersion: batch/v1
@@ -300,8 +296,8 @@ spec:
           command: ["./bin/migrate"]
 ```
 
-Argo CD runs `PreSync` hooks before applying the normal sync resources and stops the sync if the hook fails. That is a much cleaner failure boundary than having an agent independently run a migration, wait for it, deploy the service, and then attempt to infer whether everything worked.
+Argo CD runs `PreSync` hooks before applying the normal sync resources and stops the sync if the hook fails. From a leadership perspective, that is the kind of separation I want: the agent can decide that the desired state should include a migration, but the existing deployment system owns sequencing, failure behavior, and reconciliation.
 
-The bigger point is that I do not think agents need to become deployment systems. We already have deployment systems with reconciliation, ordering, policy, audit history, and a reasonably well-understood permission model. An agent is useful one layer earlier, where the work is interpreting intent and proposing a concrete change.
+The broader company decision is not whether agents are capable of deploying software. They are. The more important question is whether introducing agents requires us to discard the controls, auditability, and separation of responsibility we already built around production. I do not think it should.
 
-That also gives us a nice property when the agent is wrong. A bad proposal becomes a failed check or a rejected pull request instead of an incident. For production infrastructure, that seems like a much better default.
+If the agent is wrong in this model, the failure mode is usually a failed check, a rejected pull request, or a proposed change that never merges. That is a much better organizational default than turning a reasoning error directly into a production incident. The technical design follows from that leadership choice: let agents interpret intent and accelerate proposals, but keep production authority inside systems whose behavior and blast radius the company already knows how to govern.
