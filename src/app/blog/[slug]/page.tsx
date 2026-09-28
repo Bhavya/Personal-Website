@@ -1,13 +1,9 @@
 import { Layout } from '@/components/layout'
 import { ShareButton } from '@/components/share-button'
-import { Typography } from '@/components/typography'
-import { badgeVariants } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { BASE_URL } from '@/config'
 import { getBlogData, getBlogList } from '@/lib/blog'
 import dayjs from 'dayjs'
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import NextLink from 'next/link'
 import { notFound } from 'next/navigation'
 
@@ -24,38 +20,27 @@ export const generateMetadata = async ({ params }: BlogPostPageProps): Promise<M
         return notFound()
     }
 
-    const { title: metaTitle, description, image: preview } = blog.metadata
-
-    const isExternal = !preview.startsWith('/images/blog/')
-
-    const image = isExternal ? preview : `${BASE_URL}${preview}`
-
-    const title = `Bhavya Blog - ${metaTitle}`
+    const { title, description, image } = blog.metadata
+    const preview = image ? (image.startsWith('http') ? image : `${BASE_URL}${image}`) : `${BASE_URL}/images/profile.png`
 
     return {
-        title: {
-            absolute: title,
-        },
+        title,
         description,
+        alternates: {
+            canonical: `/blog/${params.slug}`,
+        },
         openGraph: {
-            title: {
-                absolute: title,
-            },
+            title,
             description,
-            images: [
-                {
-                    url: image,
-                    width: 800,
-                    height: 600,
-                },
-            ],
+            type: 'article',
+            url: `${BASE_URL}/blog/${params.slug}`,
+            images: [preview],
         },
         twitter: {
-            title: {
-                absolute: title,
-            },
+            card: 'summary_large_image',
+            title,
             description,
-            images: [image],
+            images: [preview],
         },
     }
 }
@@ -69,31 +54,58 @@ const BlogPostPage = async ({ params }: BlogPostPageProps) => {
     }
 
     const { metadata, content } = blog
-    const { title, description, tags, image, date } = metadata
+    const { title, description, tags, date } = metadata
+    const url = `${BASE_URL}/blog/${slug}`
+
+    const articleStructuredData = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: title,
+        description,
+        datePublished: date,
+        dateModified: date,
+        mainEntityOfPage: url,
+        author: {
+            '@type': 'Person',
+            name: 'Bhavya Kashyap',
+            url: BASE_URL,
+        },
+        keywords: tags.join(', '),
+    }
 
     return (
-        <Layout>
-            <div className="flex flex-col md:flex-row gap-8 justify-between pt-8">
-                <div className="flex flex-wrap gap-1 items-center">
-                    {tags.map((tag) => (
-                        <NextLink
-                            key={tag}
-                            href={`/blog/tag/${tag}`}
-                            className={badgeVariants({ variant: 'secondary' })}
-                        >
-                            {tag}
-                        </NextLink>
-                    ))}
-                </div>
-                <ShareButton title={title} text={`${title}\n\n${description}`} url={`${BASE_URL}/blog/${slug}`} />
-            </div>
-            <Separator />
-            <article className="prose prose-a:text-primary max-w-none pb-20">
-                <p className="text-sm text-muted-foreground">{dayjs(date).format('MMMM D, YYYY')}</p>
-                <Typography variant="h1">{title}</Typography>
-                <p>{description}</p>
-                <Image src={image} width={500} height={500} className="h-full w-full rounded" alt={title} />
-                <div dangerouslySetInnerHTML={{ __html: content }} />
+        <Layout className="space-y-0">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }}
+            />
+
+            <article className="mx-auto max-w-3xl py-12 sm:py-16">
+                <NextLink href="/blog" className="editorial-link text-sm text-muted-foreground">
+                    ← Writing
+                </NextLink>
+
+                <header className="border-b border-border pb-10 pt-10">
+                    <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted-foreground">
+                        <time>{dayjs(date).format('MMMM D, YYYY')}</time>
+                        <span aria-hidden="true">·</span>
+                        {tags.map((tag) => (
+                            <span key={tag}>{tag}</span>
+                        ))}
+                    </div>
+                    <h1 className="font-serif text-4xl font-normal leading-[1.08] tracking-[-0.035em] sm:text-6xl">
+                        {title}
+                    </h1>
+                    <p className="mt-6 text-lg leading-8 text-muted-foreground">{description}</p>
+                    <div className="mt-7">
+                        <ShareButton title={title} text={description} url={url} />
+                    </div>
+                </header>
+
+                <div
+                    className="prose prose-zinc mt-10 max-w-none prose-headings:font-serif prose-headings:font-normal prose-headings:tracking-tight prose-a:text-primary prose-p:leading-8 dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: content }}
+                />
             </article>
         </Layout>
     )
@@ -104,9 +116,7 @@ export default BlogPostPage
 export const generateStaticParams = async () => {
     const blogs = await getBlogList()
 
-    const paths = blogs.map((blog) => ({
+    return blogs.map((blog) => ({
         slug: blog.slug,
     }))
-
-    return paths
 }
