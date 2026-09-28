@@ -184,20 +184,6 @@ const HomePage = async () => {
                         </a>
 
                         <a
-                            href="https://www.mindwareanalytics.ai/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group block"
-                        >
-                            <div className="font-serif text-xl group-hover:underline group-hover:underline-offset-4">
-                                Mindware Analytics ↗
-                            </div>
-                            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                                My dad’s analytics and AI consultancy.
-                            </p>
-                        </a>
-
-                        <a
                             href="https://www.bhavyakashyap.me/"
                             target="_blank"
                             rel="noopener noreferrer"
