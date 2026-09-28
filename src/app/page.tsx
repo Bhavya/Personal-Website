@@ -6,11 +6,13 @@ import NextLink from 'next/link'
 const currentProjects = [
     {
         name: 'Settlement',
+        url: 'https://www.withsettlement.com/',
         description:
             'I’m exploring what reliable execution should look like when AI agents can move money and take real-world actions.',
     },
     {
         name: 'DealMemo',
+        url: 'https://trydealmemo.so/',
         description:
             'I’m building a lightweight diligence tool for angels to turn deal materials into a structured memo quickly.',
     },
@@ -111,7 +113,20 @@ const HomePage = async () => {
                             >
                                 <span className="font-serif text-sm text-primary">0{index + 1}</span>
                                 <div>
-                                    <h2 className="text-base font-semibold tracking-tight">{project.name}</h2>
+                                    {'url' in project ? (
+                                        <h2 className="text-base font-semibold tracking-tight">
+                                            <a
+                                                href={project.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="editorial-link"
+                                            >
+                                                {project.name} ↗
+                                            </a>
+                                        </h2>
+                                    ) : (
+                                        <h2 className="text-base font-semibold tracking-tight">{project.name}</h2>
+                                    )}
                                     <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">
                                         {project.description}
                                     </p>
