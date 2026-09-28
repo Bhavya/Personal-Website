@@ -12,10 +12,29 @@ import { CompileResults, unified } from 'unified'
 
 const blogPath = path.join(process.cwd(), 'src', 'blog')
 
+export const BLOG_TAGS = [
+    'AI',
+    'Engineering',
+    'Infrastructure',
+    'Engineering Leadership',
+    'Product',
+    'Careers',
+    'Investing',
+    'Startups',
+    'Markets',
+    'Books',
+    'Personal',
+    'Culture',
+    'Design',
+    'Security',
+] as const
+
+export type BlogTag = (typeof BLOG_TAGS)[number]
+
 export type BlogFrontmatter = {
     title: string
     description: string
-    tags: string[]
+    tags: BlogTag[]
     image?: string
     date: string
     externalUrl?: string
@@ -39,6 +58,16 @@ export const getBlogData = async (slug: string): Promise<BlogData | null> => {
 
     const { content, data } = matter(await readFile(filePath, 'utf8'))
     const frontmatter = data as BlogFrontmatter
+
+    const invalidTags = (frontmatter.tags || []).filter(
+        (tag) => !BLOG_TAGS.includes(tag as BlogTag),
+    )
+
+    if (invalidTags.length > 0) {
+        throw new Error(
+            `Invalid blog tag(s) in ${slug}: ${invalidTags.join(', ')}. Use a tag from BLOG_TAGS.`,
+        )
+    }
 
     if (!frontmatter.date) {
         return null
@@ -67,7 +96,7 @@ export const getBlogList = async (tag?: string): Promise<BlogData[]> => {
         files.map(async (file) => {
             const slug = file.replace(/\.mdx$/, '')
             const blogData = await getBlogData(slug)
-            if (!tag || (blogData && blogData.metadata.tags.includes(tag))) {
+            if (!tag || (blogData && blogData.metadata.tags.includes(tag as BlogTag))) {
                 return blogData
             }
             return null
@@ -89,13 +118,11 @@ export const getBlogList = async (tag?: string): Promise<BlogData[]> => {
 
 export const getBlogTags = async () => {
     const posts = await getBlogList()
-    const tagsSet = new Set<string>()
+    const tagsSet = new Set<BlogTag>()
 
     posts.forEach((post) => {
         post.metadata.tags.forEach((tag) => tagsSet.add(tag))
     })
 
-    const tags = Array.from(tagsSet).map((tag) => ({ tag }))
-
-    return tags
+    return BLOG_TAGS.filter((tag) => tagsSet.has(tag)).map((tag) => ({ tag }))
 }
