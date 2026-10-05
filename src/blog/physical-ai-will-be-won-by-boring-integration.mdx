@@ -1,0 +1,33 @@
+---
+title: "Physical AI will be won by boring integration"
+description: "Better robot intelligence matters, but the harder commercial test is getting robots to work reliably inside real factories."
+tags:
+  - AI
+  - Engineering
+  - Startups
+date: "2026-10-05"
+---
+
+[RobCo reached a $1 billion valuation](https://www.reuters.com/legal/transactional/german-robot-startup-robco-hits-1-billion-valuation-ceo-moves-us-2026-10-05/) today. The obvious story is investor enthusiasm for physical AI and its coming two-armed robot, Alfie. I'm more interested in what RobCo has been shipping around the robot.
+
+Its [RobFlow 8 release](https://docs.rob.co/releases/robflow/robflow-8-0/) moved the platform onto ROS 2. It also introduced guided vision-based calibration and a beta OPC UA server that lets factory software read robot state. Those sound less exciting than a robot learning a new task. They may be closer to what gets one deployed.
+
+A factory does not buy a demo. It needs a machine that can be installed, connected to existing systems, operated by its staff, and brought back into service when something changes. A robot might perform beautifully in a controlled video and still be difficult to use if recalibration requires a specialist or if nobody can tell the production system whether the cell is running, stopped, or waiting for help.
+
+That is why I think the commercial winners in physical AI may be determined as much by integration and recovery as by the intelligence of the robot itself.
+
+## The work after the demo
+
+A manufacturing task sits inside a larger process. Parts arrive in a particular way. Another machine needs to know when the robot has finished. Operators need to intervene safely. Maintenance teams need to diagnose failures, replace a component, and resume without guessing what happened to the work in progress.
+
+Some of this can be handled by better models. Much of it needs good interfaces, predictable state, calibration tools, and support for the systems already on the factory floor.
+
+RobCo's OPC UA support is a concrete example. It exposes robot information in a form that manufacturing execution and supervisory systems can consume. Its guided calibration feature addresses a different deployment problem: keeping physical movements aligned with intended positions as equipment and conditions change. Both are product work, even if neither makes for a dramatic launch video.
+
+There is a useful distinction here. Running RobFlow on ROS 2 gives RobCo a robotics software foundation. The OPC UA server is the connection to factory IT. Those are related decisions, but they solve different problems.
+
+## What I'd watch
+
+I would want to know how long a deployment takes after the first one, how much custom engineering each customer requires, how often operators can resolve issues themselves, and what uptime looks like outside a pilot. If the answer improves with every installation, the company is building a repeatable product. If each site remains a bespoke project, an impressive robot can still become a difficult business.
+
+This is not an argument against better robot intelligence. More capable robots expand the range of tasks worth automating. But the model has to survive contact with the surrounding workflow. The company that makes the entire installation easy to operate and recover may have an advantage over the one with the best isolated demo.
