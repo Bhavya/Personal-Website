@@ -33,6 +33,11 @@ export const metadata: Metadata = {
     ],
     alternates: {
         canonical: '/',
+        types: {
+            'application/rss+xml': [
+                { url: '/notes/rss.xml', title: 'Bhavya Kashyap | Notes' },
+            ],
+        },
     },
     icons: {
         icon: [
