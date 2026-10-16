@@ -8,26 +8,28 @@ tags:
 date: "2026-10-05"
 ---
 
-[RobCo reached a $1 billion valuation](https://www.reuters.com/legal/transactional/german-robot-startup-robco-hits-1-billion-valuation-ceo-moves-us-2026-10-05/) today. The obvious story is investor enthusiasm for physical AI and its coming two-armed robot, Alfie. I'm more interested in what RobCo has been shipping around the robot.
+[**RobCo reached a $1 billion valuation**](https://www.reuters.com/legal/transactional/german-robot-startup-robco-hits-1-billion-valuation-ceo-moves-us-2026-10-05/) today. The obvious story is investor enthusiasm for physical AI and its coming two-armed robot, Alfie. I'm more interested in what RobCo has been shipping around the robot.
 
-Its [RobFlow 8 release](https://docs.rob.co/releases/robflow/robflow-8-0/) moved the platform onto ROS 2. It also introduced guided vision-based calibration and a beta OPC UA server that lets factory software read robot state. Those sound less exciting than a robot learning a new task. They may be closer to what gets one deployed.
+Its [**RobFlow 8 release**](https://docs.rob.co/releases/robflow/robflow-8-0/) moved the platform onto ROS 2. It also introduced guided vision-based calibration and a beta OPC UA server that lets factory software read robot state. Those sound less exciting than a robot learning a new task. They may be closer to what gets one deployed.
 
-A factory does not buy a demo. It needs a machine that can be installed, connected to existing systems, operated by its staff, and brought back into service when something changes. A robot might perform beautifully in a controlled video and still be difficult to use if recalibration requires a specialist or if nobody can tell the production system whether the cell is running, stopped, or waiting for help.
+I keep coming back to how much work a robot creates for the people who have to maintain it. You can watch a very impressive video without learning whether the factory team can recalibrate the thing themselves, or whether they have to wait for a specialist every time something changes. You also don't learn much about how it talks to the equipment and software already in the building.
 
-That is why I think the commercial winners in physical AI may be determined as much by integration and recovery as by the intelligence of the robot itself.
+Those details affect how much useful work the robot actually gets through. I think they will have a lot to do with which robotics companies become good businesses.
 
-## The work after the demo
+***Someone still has to get this working in a factory***
 
 A manufacturing task sits inside a larger process. Parts arrive in a particular way. Another machine needs to know when the robot has finished. Operators need to intervene safely. Maintenance teams need to diagnose failures, replace a component, and resume without guessing what happened to the work in progress.
 
-Some of this can be handled by better models. Much of it needs good interfaces, predictable state, calibration tools, and support for the systems already on the factory floor.
+Better models can help with some of this. But if the production system cannot tell what the robot has done, or the maintenance team cannot work out why it stopped, improving the model alone leaves quite a lot unresolved.
 
-RobCo's OPC UA support is a concrete example. It exposes robot information in a form that manufacturing execution and supervisory systems can consume. Its guided calibration feature addresses a different deployment problem: keeping physical movements aligned with intended positions as equipment and conditions change. Both are product work, even if neither makes for a dramatic launch video.
+RobCo's OPC UA support is a concrete example. It exposes robot information in a form that manufacturing execution and supervisory systems can consume. Its guided calibration feature addresses a different deployment problem: keeping physical movements aligned with intended positions as equipment and conditions change. I like seeing those things in a release because they address the work a customer has to do after deciding the robot is worth trying.
 
-There is a useful distinction here. Running RobFlow on ROS 2 gives RobCo a robotics software foundation. The OPC UA server is the connection to factory IT. Those are related decisions, but they solve different problems.
+The two software pieces do different jobs too. ROS 2 is the foundation RobFlow runs on. The OPC UA server lets factory systems read information from the robot. Using ROS 2 underneath does not, by itself, make all the existing factory software understand what the robot is doing.
 
-## What I'd watch
+***I would want to know what the second installation looks like***
 
-I would want to know how long a deployment takes after the first one, how much custom engineering each customer requires, how often operators can resolve issues themselves, and what uptime looks like outside a pilot. If the answer improves with every installation, the company is building a repeatable product. If each site remains a bespoke project, an impressive robot can still become a difficult business.
+The first installation proves that a team can get the robot working somewhere. I'd want to know how much of that work carries over to the second customer, and the third. How much custom engineering does each site need? Can operators resolve common problems themselves? What happens to uptime once the pilot team leaves?
 
-This is not an argument against better robot intelligence. More capable robots expand the range of tasks worth automating. But the model has to survive contact with the surrounding workflow. The company that makes the entire installation easy to operate and recover may have an advantage over the one with the best isolated demo.
+If those answers improve with each installation, the company has a way to make deployment easier as it grows. If every site needs another substantial engineering project, selling more robots may also mean taking on much more work.
+
+More capable robots expand the range of tasks worth automating, which is exciting. I just think the adoption question is much more practical than a lot of the discussion makes it sound. A factory has to live with the robot after buying it. How annoying that turns out to be will matter.
