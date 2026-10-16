@@ -35,6 +35,7 @@ export const metadata: Metadata = {
         canonical: '/',
         types: {
             'application/rss+xml': [
+                { url: '/blog/rss.xml', title: 'Bhavya Kashyap | Blog' },
                 { url: '/notes/rss.xml', title: 'Bhavya Kashyap | Notes' },
             ],
         },
