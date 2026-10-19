@@ -22,6 +22,8 @@ Bhavya selected `src/blog/the-web-is-becoming-an-unstable-dependency-for-ai-assi
 - Do not force slang, jokes, "lol," personal anecdotes, or uncertainty into every post.
 - State opinions confidently. Use uncertainty when it is real and specific, not as a stock softener ("I'm curious," "it will be interesting to see").
 - Do not use em dashes. Keep sentences readable and avoid packing several logical steps into one sentence.
+- Use "and" and "but" within sentences more often to connect closely related thoughts. Bhavya prefers a natural conversational flow over splitting every clause into a separate short sentence. Allow moderately longer sentences when they express one connected thought, and avoid chains of clipped declarations. She generally does not start sentences with conjunctions; this preference concerns connections within sentences.
+- For example, prefer "I still agree with much of what I wrote, but I also feel pretty unsettled by the cancellation" to "I still agree with much of what I wrote. I also feel pretty unsettled by the cancellation."
 - Preserve nuance and show the causal steps. A reported concentration in VC fundraising, for example, does not establish that useful businesses lack all financing options.
 - Link to sources close to the relevant claim. Verify new factual claims; distinguish evidence from the author's interpretation.
 - End when the argument is complete. A genuine unresolved question can work; a formulaic engagement question is not required.
