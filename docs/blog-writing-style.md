@@ -27,3 +27,11 @@ Bhavya selected `src/blog/the-web-is-becoming-an-unstable-dependency-for-ai-assi
 - End when the argument is complete. A genuine unresolved question can work; a formulaic engagement question is not required.
 
 The reference is a style model, not a source of reusable personal anecdotes or facts for unrelated posts.
+
+## Opinion articles
+
+- Lead with a clear, contestable position and the decision it should change. Explain why the issue deserves attention now, with concrete stakes and a supported reason delay matters.
+- Use examples and technical mechanics to support the argument. Do not substitute a workflow tutorial or a list of sensible practices for an opinion.
+- Urgency must come from real consequences, constraints, developments, or accumulating costs. Do not manufacture deadlines, claim widespread failures without evidence, or use alarmist marketing language.
+- Keep the author's position visible throughout, including the conclusion. Prefer clear reasoning over repeated 'I would want' qualifications.
+- Bhavya generally does not start sentences with conjunctions.
