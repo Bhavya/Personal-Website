@@ -1,6 +1,6 @@
 ---
-title: "Banks need to control what their agents do together"
-description: "A dispute agent can handle a case correctly while another agent collects the disputed amount. I think banks need to evaluate those actions together."
+title: "Banks need shared controls before they give agents more authority"
+description: "Banks should make shared financial controls a condition of expanding agent pilots. Waiting until agents are embedded across departments makes the problem harder and more expensive to fix."
 tags:
   - AI
   - Infrastructure
@@ -8,38 +8,42 @@ tags:
 date: "2026-10-19"
 ---
 
-I think a lot of the work involved in bringing AI agents into a bank will be getting them to respect decisions made elsewhere in the institution. An agent can understand its assignment and still take an action that conflicts with another team's work.
+Banks should make shared financial controls a condition of giving AI agents more authority. I think waiting until agents are embedded across servicing, collections, and payments is a mistake. By then, customers may already depend on workflows that were never designed to respect one another's decisions.
 
-Consider a customer disputing $900 of a $1,200 credit-card balance. A servicing agent opens the investigation. Meanwhile, an agent managing autopay prepares to collect the full balance. Each has a fairly understandable task. The customer still ends up paying money they were entitled to withhold.
+The immediate temptation is understandable. Find a task, show that an agent can do it, measure the time saved, and expand. A pilot can look successful on those terms while leaving a fairly consequential question unanswered: what happens when another agent is working on the same account?
 
-That is the kind of situation I would want resolved before giving either agent more autonomy.
+I would want that answered before approving the expansion. Otherwise, each successful pilot can create another place where the bank makes a commitment without knowing what it has already promised elsewhere.
 
-***The dispute changes what other workflows are allowed to do***
+***The window to sort this out is while the deployments are still small***
 
-For this hypothetical, assume the customer has submitted a qualifying written billing-error notice within the required 60-day window, and the card issuer receives it more than three business days before its own scheduled autopay. Assume there are no related charges to account for.
+This is already becoming an industry concern. On September 22, Bank of America, Capital One, and four other banks [**published joint principles for agentic commerce**](https://newsroom.bankofamerica.com/content/newsroom/press-releases/2026/09/global-banks-collaborate-on-principles-for-trusted-agentic-comme.html). Their announcement explicitly raises authorization, liability, and customer protection. That work concerns agents shopping and paying on customers' behalf, but the same questions deserve attention inside the bank.
 
-[**Regulation Z's billing-error rules**](https://www.consumerfinance.gov/rules-policy/regulations/1026/13/) protect the disputed amount during resolution. Under the specified autopay conditions, the issuer cannot deduct that amount or related finance or other charges. The undisputed $300 can still be paid.
+If every department connects its own agent to a different set of systems, coordinating them later means revisiting integrations, approval processes, and assumptions about which records can be trusted. The first deployment is where the bank starts making those choices, whether or not anyone calls them a strategy.
 
-Opening a case is therefore only part of the work. The dispute has changed what the bank can collect. That change has to reach the system authorizing the debit before the debit happens.
+I think the urgency comes from that accumulation. A bank does not need thousands of autonomous agents before two workflows can conflict. It needs two workflows with authority over the same financial position.
 
-Giving both agents a copy of the regulation would not make me comfortable that this will happen. The autopay agent needs the current dispute status, and the service executing the collection needs to enforce it. A conversation in the servicing agent's history is a fairly poor place to keep a fact that other workflows must respect.
+***A correctly handled dispute can still lead to an unlawful collection***
 
-***The bank also needs to know what it has already committed to***
+Consider a hypothetical customer disputing $900 of a $1,200 credit-card balance. Assume a qualifying written billing-error notice arrives within the required 60-day window and more than three business days before issuer autopay, with no related charges to account for.
 
-Suppose a separate customer-service interaction concerns compensation for the inconvenience. The bank has a hypothetical policy allowing up to $200 in discretionary goodwill credits over 30 days without further approval.
+[**Regulation Z protects the disputed amount during resolution**](https://www.consumerfinance.gov/rules-policy/regulations/1026/13/). Under those conditions, the issuer cannot deduct that amount through its autopay plan. The undisputed $300 can still be paid.
 
-The customer has received $50. Another $80 is approved but has not posted. An agent proposes an additional $100. Looking only at completed credits makes the request appear to fit. Counting the pending commitment brings the total to $230.
+A servicing agent can open the investigation correctly while an autopay agent prepares to collect $1,200 from an older account record. The customer protection only works if the dispute changes what the collection system is allowed to execute.
 
-These goodwill credits are separate from any correction or protection the law requires. A discretionary budget cannot become a reason to withhold mandatory relief.
+That is why evaluating agents individually is insufficient. The bank needs to test whether a decision in one workflow actually constrains another. Giving both agents the regulation does not establish that connection.
 
-I would want the proposed action recorded before execution, with enough detail to establish the customer, amount, purpose, and authority. Checking the total and recording a new commitment have to happen together, so two agents cannot both use the same remaining allowance. If the extra credit needs human approval, the reviewer should see the existing $130 commitment too. Approval should apply to the specific action reviewed, rather than becoming permission for whatever the agent decides to do next.
+***A person approving the action needs the same shared picture***
 
-***I would still check whether the change actually happened***
+Company limits have the same problem. Imagine a hypothetical $200 allowance for discretionary goodwill credits over 30 days. A customer has received $50, another $80 is approved but pending, and an agent proposes $100 more.
 
-Return to the autopay. The agent submits an instruction to reduce it to $300, but the payment system rejects the update. The agent has followed the intended process. The original $1,200 debit is still scheduled.
+Counting only posted credits makes the new request look acceptable. Counting commitments puts the total at $230. These discretionary credits are separate from mandatory corrections, which cannot be withheld because a goodwill budget has run out.
 
-A record that says “update requested” cannot support telling the customer that autopay has been corrected. I would want confirmation from the payment system, with an unresolved result kept open and routed to someone who can intervene before collection.
+Putting a human in the approval loop does not resolve this if the reviewer also sees only the posted $50. The bank needs a shared record of proposed and authorized actions, including pending amounts, before either a person or an agent can make an informed decision. That record also has to prevent two workers from committing the same remaining allowance.
 
-The same applies to the pending $80 credit. Another agent should not assume it failed because confirmation is late and issue a replacement. It also should not assume the customer has received it. Both decisions depend on establishing what actually happened.
+***This should be part of the investment decision***
 
-These coordination problems already exist in financial software. Agents make them easier to reproduce across more workflows, especially when different teams buy or build their agents separately. I think banks will get more useful automation when they can check a proposed action against shared obligations and commitments, then verify the outcome. That gives them a way to expand what agents can do without asking each agent to reconstruct the bank's position from its own limited view.
+There is a commercial cost to getting this wrong too. A bank that has to rebuild these controls for every new agent will spend more on integration and review each time it expands. An incident can also force it to pause useful automation while it works out which other workflows have the same weakness.
+
+I would fund the ability to apply shared obligations, limits, and approvals early. I would also require evidence from the underlying financial systems before an agent declares the work complete. An accepted request to change autopay is not confirmation that the scheduled debit changed.
+
+Banks can keep learning through narrow deployments while doing this. The decision I would push back on is expanding an agent's authority because its own pilot looks good, without testing how its actions affect the rest of the institution. That is easiest to address before the next department builds around it.
