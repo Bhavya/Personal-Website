@@ -27,6 +27,10 @@ export async function GET() {
     )
     const items = posts.map((post) => {
         const url = new URL(`/blog/${post.slug}`, BASE_URL).href
+        const image = post.metadata.image
+            ? `<p><img src="${escapeXml(new URL(post.metadata.image, BASE_URL).href)}" alt="" /></p>`
+            : ''
+        const content = image + String(post.content)
         return `<item>
 <title>${escapeXml(post.metadata.title)}</title>
 <link>${escapeXml(url)}</link>
@@ -34,7 +38,7 @@ export async function GET() {
 <pubDate>${new Date(post.metadata.date).toUTCString()}</pubDate>
 <dc:creator>Bhavya Kashyap</dc:creator>
 <description>${escapeXml(post.metadata.description)}</description>
-<content:encoded>${cdata(absoluteUrls(String(post.content), url))}</content:encoded>
+<content:encoded>${cdata(absoluteUrls(content, url))}</content:encoded>
 ${post.metadata.tags.map((tag) => `<category>${escapeXml(tag)}</category>`).join('\n')}
 </item>`
     }).join('\n')
