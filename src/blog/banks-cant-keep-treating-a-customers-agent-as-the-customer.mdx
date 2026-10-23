@@ -8,21 +8,21 @@ tags:
 date: "2026-10-23"
 ---
 
-Banks should block an outside AI agent if they cannot establish what it is allowed to do, but they also need to offer customers a better way to delegate financial tasks. I don’t think passing for the customer should be the price of getting useful work done.
+Banks should block an outside AI agent if they cannot establish what it is allowed to do, but they also need to offer customers a better way to delegate financial tasks. Customers should be able to ask an assistant to do something useful without giving it the same access they have themselves.
 
-The posts circulating this week make it sound as though rogue agents have started breaking into everyone’s bank accounts. The reporting is more qualified. On October 22, [**Reuters reported that major banks were blocking third-party agents**](https://www.reuters.com/legal/government/us-banks-detect-unauthorized-ai-agents-customer-accounts-axios-reports-2026-10-22/), including cases involving customers sharing their credentials. It also reported that Morgan Stanley had blocked outside agents but had not observed instances of rogue or unauthorised agents.
+The posts circulating this week make it sound as though rogue agents are breaking into bank accounts, but [**Reuters’s October 22 reporting**](https://www.reuters.com/legal/government/us-banks-detect-unauthorized-ai-agents-customer-accounts-axios-reports-2026-10-22/) includes cases involving customers sharing their credentials and banks blocking those agents. It also says Morgan Stanley has blocked outside agents but has not observed instances of rogue or unauthorised agents.
 
-That distinction matters. A customer asking an assistant to help with their money is different from someone breaking into their account, but neither the customer’s password nor a general request for help tells the bank exactly which actions should be permitted.
+A customer asking an assistant to help with their money hasn’t necessarily had their account broken into, but they also haven’t necessarily approved everything the assistant might try once it gets in. The bank needs to be able to tell what they actually asked for and whether the proposed action falls within it.
 
 ***The customer can want help without authorising everything***
 
-There is a fairly big gap between asking an agent to find a better savings rate and asking it to move money. There is another gap between approving one transfer and giving it ongoing authority to decide when and where to transfer funds.
+Asking an agent to find me a better savings rate doesn’t mean I’ve asked it to move my money, and approving one transfer doesn’t mean I’m comfortable letting it decide when or where to make the next one.
 
-If the agent enters through the same session as the customer, those distinctions can become difficult to enforce. The interface may let it see balances, add a recipient, change settings and initiate payments because those are all things the customer can do. The customer may have intended to delegate only one of them.
+If the agent enters through the same session as the customer, it may be able to see balances, add a recipient, change settings and initiate payments because those are all things the customer can do. Someone who only wanted help comparing accounts may have given it access to much more without intending to.
 
-I would be uncomfortable with a bank accepting a consequential action simply because the agent arrived with valid credentials. I would also be uncomfortable with an agent provider treating a broad instruction as permission to use every capability the login exposes.
+I don’t think a bank should accept a payment request simply because the agent arrived with valid credentials, and I don’t think the agent provider should treat a broad instruction as permission to use everything the login exposes.
 
-The bank needs to recognise the agent as an agent and know which customer it represents, but it also needs a usable record of the authority that customer actually granted. That authority should expire or be revoked without requiring the customer to change their banking password.
+The bank needs to know which agent is acting for which customer and what that customer has allowed it to do. The customer should also be able to withdraw that permission, or have it expire after the task is done, without changing their banking password.
 
 ***Even a sensible instruction needs the account’s full context***
 
@@ -32,28 +32,24 @@ The posted balance is $8,000, so moving $3,000 looks reasonable. Rent of $2,500 
 
 Even if the assistant accounts for rent, there is only $500 available under that instruction. If two authorised workflows each decide to move $300 before either transfer posts, they have collectively exceeded it.
 
-Neither agent needs to be malicious or particularly stupid for this to happen. Each can be following a reasonable interpretation of the instruction while looking at an incomplete picture.
+Both agents could be following a reasonable interpretation of the instruction, but neither has accounted for the other transfer and the customer is still left with less money than they wanted to keep available.
 
-The bank should evaluate the proposed transfer against scheduled payments, pending transfers and commitments already made through other channels. It also needs to prevent two requests from claiming the same remaining allowance. Asking the model to remember the buffer is useful, but the system executing the transfer should enforce it.
+The bank should evaluate the proposed transfer against scheduled payments, pending transfers and commitments already made through other channels, and prevent two requests from claiming the same remaining allowance. I wouldn’t be comfortable relying on the model to remember the buffer when the system executing the transfer could enforce it.
 
-The customer’s instruction also doesn’t replace the bank’s own rules. A transfer still needs to meet the applicable account restrictions, regulatory requirements and company policies, even when it is requested by an agent the customer trusts.
+The transfer also needs to meet the applicable account restrictions, regulatory requirements and company policies. A customer trusting an agent doesn’t give the bank a reason to set those aside.
 
 ***There is already work on how agents should identify themselves***
 
 On October 6, Meta and Sierra [**announced Personal Agent Protocol**](https://sierra.ai/blog/introducing-personal-agent-protocol). Its [**current draft documentation**](https://personalagentprotocol.org/docs/introduction) describes a way for agents to identify themselves and obtain access limited by what the customer and company agree to, with access that can be revoked.
 
-That seems like a useful direction. Customers should be able to choose an assistant and companies should be able to set boundaries around what it can do.
+I like that customers would be able to choose an assistant while companies could set boundaries around what it does, but the bank still has to apply that permission to the account as it stands when the request arrives. Knowing that an agent is allowed to transfer money doesn’t tell you how much is safe to move or whether another request has already committed it.
 
-The bank still has to connect that permission to its actual financial systems. A permission to transfer money cannot, by itself, establish how much is safe to move at this moment or whether another request has already committed it.
-
-Approval also needs to refer to a specific action. If I approve $500 going to a particular account, the agent should not quietly substitute a different destination or amount and treat my earlier approval as sufficient. If it is unsure whether the transfer completed, it needs to check the underlying transaction before trying again.
-
-Those are things I would expect the institution to enforce regardless of which model or agent provider made the request.
+If I approve $500 going to a particular account, the agent should not quietly substitute a different destination or amount and treat my earlier approval as sufficient. The bank should enforce what I approved regardless of which agent made the request, and if the agent is unsure whether the transfer completed, it needs to check the underlying transaction before trying again.
 
 ***Blocking buys time, but customers still need an approved route***
 
-I understand why banks are restricting access. I would rather have an assistant fail to complete a task than have it improvise with my money, and I don’t think customers wanting a feature obliges a bank to enable it before the controls exist.
+I understand why banks are restricting access, and I would rather have an assistant fail to complete a task than have it improvise with my money. Customers wanting a feature doesn’t oblige a bank to enable it before the controls exist.
 
 I do think banks should be using this period to build a narrow, explicit way to delegate actions. A transfer between existing accounts, with a customer-defined limit and confirmation of the outcome, seems like a more useful place to start than debating whether agents should have access in general.
 
-Otherwise, the choice remains frustrating: the assistant can explain what I should do, or I can hand it credentials that expose far more authority than the task requires. I would want my bank to offer something between those options, and I would want it working on that now while the scope is still small enough to get right.
+Otherwise, I’m left with an assistant that can explain what I should do but can’t do it, unless I hand over credentials that expose far more authority than the task requires. Banks already have customers trying that second option, so I don’t think they can wait for their own preferred version of an assistant to be ready before working out how to handle the ones customers bring with them.
