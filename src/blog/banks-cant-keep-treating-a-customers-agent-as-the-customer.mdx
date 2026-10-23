@@ -1,0 +1,55 @@
+---
+title: "Banks can’t keep treating a customer’s agent as the customer"
+description: "Banks are right to restrict agents they cannot control, but customers need a way to delegate specific financial tasks without handing over the authority of an entire login."
+tags:
+  - AI
+  - Infrastructure
+  - Product
+date: "2026-10-23"
+---
+
+Several major banks are blocking outside AI agents from accessing customer accounts, and the posts about it sound pretty alarming. [**Reuters’s October 22 reporting**](https://www.reuters.com/legal/government/us-banks-detect-unauthorized-ai-agents-customer-accounts-axios-reports-2026-10-22/) includes cases where customers shared their own login details, though, and says Morgan Stanley has blocked outside agents without observing instances of rogue or unauthorised agents.
+
+I can see why someone would want an assistant to move spare cash or deal with an annoying banking task, but giving it a password seems like a pretty imprecise way to say what it can do. A person might have asked for one transfer while giving the agent access to settings and payment options they never intended it to touch.
+
+Banks are right to block access they haven’t approved, but I’d like to see them make it possible to authorise the task itself. A customer should be able to choose an assistant and let it do a specific thing without handing it the authority of an entire banking login.
+
+***The customer can want help without authorising everything***
+
+Asking an agent to find me a better savings rate doesn’t mean I’ve asked it to move my money, and approving one transfer doesn’t mean I’m comfortable letting it decide when or where to make the next one.
+
+If the agent enters through the same session as the customer, it may be able to see balances, add a recipient, change settings and initiate payments because those are all things the customer can do. Someone who only wanted help comparing accounts may have given it access to much more without intending to.
+
+I don’t think a bank should accept a payment request simply because the agent arrived with valid credentials, and I don’t think the agent provider should treat a broad instruction as permission to use everything the login exposes.
+
+The bank needs to know which agent is acting for which customer and what that customer has allowed it to do. The customer should also be able to withdraw that permission, or have it expire after the task is done, without changing their banking password.
+
+***Even a sensible instruction needs the account’s full context***
+
+Imagine asking an assistant to move spare cash into an existing savings account while keeping at least $5,000 in your current account. This is a hypothetical example, but it is exactly the kind of boring financial housekeeping I would want an assistant to handle.
+
+The posted balance is $8,000, so moving $3,000 looks reasonable. Rent of $2,500 is scheduled for tomorrow, though, and moving the full amount would leave the account well below the buffer once rent goes out.
+
+Even if the assistant accounts for rent, there is only $500 available under that instruction. If two authorised workflows each decide to move $300 before either transfer posts, they have collectively exceeded it.
+
+Both agents could be following a reasonable interpretation of the instruction, but neither has accounted for the other transfer and the customer is still left with less money than they wanted to keep available.
+
+The bank should evaluate the proposed transfer against scheduled payments, pending transfers and commitments already made through other channels, and prevent two requests from claiming the same remaining allowance. I wouldn’t be comfortable relying on the model to remember the buffer when the system executing the transfer could enforce it.
+
+The transfer also needs to meet the applicable account restrictions, regulatory requirements and company policies. A customer trusting an agent doesn’t give the bank a reason to set those aside.
+
+***There is already work on how agents should identify themselves***
+
+On October 6, Meta and Sierra [**announced Personal Agent Protocol**](https://sierra.ai/blog/introducing-personal-agent-protocol). Its [**current draft documentation**](https://personalagentprotocol.org/docs/introduction) describes a way for agents to identify themselves and obtain access limited by what the customer and company agree to, with access that can be revoked.
+
+I like that customers would be able to choose an assistant while companies could set boundaries around what it does, but the bank still has to apply that permission to the account as it stands when the request arrives. Knowing that an agent is allowed to transfer money doesn’t tell you how much is safe to move or whether another request has already committed it.
+
+If I approve $500 going to a particular account, the agent should not quietly substitute a different destination or amount and treat my earlier approval as sufficient. The bank should enforce what I approved regardless of which agent made the request, and if the agent is unsure whether the transfer completed, it needs to check the underlying transaction before trying again.
+
+***Blocking buys time, but customers still need an approved route***
+
+I understand why banks are restricting access, and I would rather have an assistant fail to complete a task than have it improvise with my money. Customers wanting a feature doesn’t oblige a bank to enable it before the controls exist.
+
+I do think banks should be using this period to build a narrow, explicit way to delegate actions. A transfer between existing accounts, with a customer-defined limit and confirmation of the outcome, seems like a more useful place to start than debating whether agents should have access in general.
+
+Otherwise, I’m left with an assistant that can explain what I should do but can’t do it, unless I hand over credentials that expose far more authority than the task requires. Banks already have customers trying that second option, so I don’t think they can wait for their own preferred version of an assistant to be ready before working out how to handle the ones customers bring with them.
