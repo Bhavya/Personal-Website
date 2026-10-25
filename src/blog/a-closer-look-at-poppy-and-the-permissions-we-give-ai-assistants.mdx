@@ -1,0 +1,79 @@
+---
+title: "A closer look at Poppy and the permissions we give AI assistants"
+description: "A review of the Personal Agent Protocol, from discovery and sign-in to conversations and action approvals, with a few thoughts on the permissions I’d like assistants to offer."
+tags:
+  - AI
+  - Infrastructure
+  - Product
+date: "2026-10-25"
+---
+
+When I first tried Muse, one of the things I wanted was a way to give it access to specific text threads for a particular task, then have that permission expire. It was a feature I hoped assistants would eventually offer. I wanted help with a few messages without making all my sensitive conversations available to the product.
+
+I’ve been reading about Poppy with that kind of experience in mind. Meta and Sierra [**announced the Personal Agent Protocol on October 6**](https://sierra.ai/blog/introducing-personal-agent-protocol) as an open standard for personal agents working with businesses. It covers how an agent finds a company’s supported interfaces, identifies itself, obtains account access and gets work done.
+
+It won’t make my preferred messaging permissions appear by itself, but it gives companies and assistant developers something shared to build around. As of October 25, [**version 0.2 is published and the working draft is 0.3**](https://personalagentprotocol.org/docs/changelog). I’m looking at that current direction here, including changes that aren’t yet part of a stable release.
+
+***It starts with the company saying how agents can interact with it***
+
+A participating company publishes a discovery document at `/.well-known/poppy.json`. The document points an agent towards its authorization service and the interfaces it offers, which can include a website, APIs described through OpenAPI or MCP, and a company agent.
+
+For example, a personal assistant could look up a retailer’s return policy before needing access to a customer’s order. When the task requires account information, the customer can authorize access and the assistant can continue through the interfaces the retailer supports. Poppy’s [**introduction describes progressive adoption**](https://personalagentprotocol.org/docs/introduction): a company can start with one interface and add others.
+
+I like that it makes room for how companies already work. A return might involve an API lookup followed by a conversation about a replacement, and requiring every part of that interaction to fit one kind of tool call would make adoption harder.
+
+Poppy also builds on existing standards, including OAuth, OpenAPI and MCP. That gives it a reasonably practical starting point, although combining existing standards still leaves implementation work and decisions about which agents a company is willing to accept.
+
+***Signing in gives the agent specific authority***
+
+The [**core specification**](https://personalagentprotocol.org/docs/0.3/spec) uses sessions to connect an agent’s activity across interfaces. Session Tokens provide access for a session, while Account Tokens are refresh tokens that can obtain signed-in access later without asking the person to sign in again.
+
+Direct Sign-In has the person authenticate on the company’s own page. Device Sign-In lets them complete authorization through a link and code on another device. Mediated Sign-In allows the agent to submit credentials, but the [**0.3 changelog explicitly treats it as transitional**](https://personalagentprotocol.org/docs/changelog) and prefers the delegated flows.
+
+I’m glad the draft prefers delegated sign-in, because repeatedly teaching people to hand passwords or verification codes to assistants seems difficult to reconcile with asking them to be careful about where those credentials go.
+
+The working draft also moves to company-defined scopes rather than universal `poppy:read` and `poppy:write` permissions. A company describes what each scope permits, allowing an agent to request the access its task needs. Whether the resulting choices are useful will depend on how those scopes are designed. An enormous permission called “manage account” would still be an enormous permission.
+
+There is protection around the credentials themselves too. The [**implementation guides**](https://personalagentprotocol.org/docs/0.3/guides) describe keeping secrets outside model context and using DPoP proofs to demonstrate possession of a session’s private key. I like that separation because the model doesn’t need to see a credential for the surrounding software to make an authorized request.
+
+***The browser and conversations are both part of the design***
+
+Poppy can connect an agent’s browser to its session, while the guides recommend separate browser storage for each session. The assistant is therefore using a company-recognized context with its own access, rather than simply inheriting the person’s ordinary browser cookies.
+
+The convenience of sharing a browser is appealing, but I have questions about how reliably a company could distinguish the two actors if both can make requests through the same authenticated session. A signature can identify a request an agent chooses to sign without establishing that an unsigned request came from the person.
+
+That is part of the [**ongoing browser-session discussion**](https://github.com/personal-agent-protocol/personal-agent-protocol/issues/32). The maintainer has left using the person’s already-signed-in browser as an open topic rather than changing the model in 0.3.
+
+Conversations have their own machinery in the spec: ordered events, resumable reading, labels for human and agent messages, and handoffs to people on either side. An assistant can encounter a situation that needs a person without treating the entire interaction as a failed automation.
+
+I’m glad this is included. I can imagine wanting an assistant to handle most of an exchange while still wanting to step in when the proposed replacement is something I wouldn’t have chosen. The usefulness would depend partly on whether I could follow what had happened without rereading a long negotiation.
+
+***Approving an action is more specific than granting account access***
+
+The optional [**Operations extension**](https://personalagentprotocol.org/docs/0.3/extensions/operations) gives a proposed action an ID, versioned terms and a record of its outcome. The agent confirms a particular revision after obtaining the user’s approval or applying a standing permission that covers it.
+
+A changed price or condition requires approval that covers the new terms. A retry refers to the same operation rather than performing it again, and the agent can check its status after a timeout.
+
+If I approve a hotel booking, I want the room, dates and cancellation conditions I saw to be the ones that get booked, and I want uncertainty after a timeout to be resolved before another booking is attempted.
+
+The extension is candid about what its record establishes: the agent stated that the person approved those terms. The company cannot independently prove that the person saw or approved them through the agent’s interface. Companies needing stronger evidence can require approval on their own site.
+
+I could see that being sufficient for a routine exchange and inadequate for a much more consequential action. Having a shared record of the terms gives both sides something specific to refer to when deciding what evidence they need.
+
+***I’m still interested in how narrowly the permission can be drawn***
+
+My original wish about text threads goes a little further than recognizing an agent or giving it a smaller list of capabilities. I want to choose the information it can use, the task it can perform and how long the access should last.
+
+Poppy provides revocation, but an expiring Session Token doesn’t necessarily end access when an Account Token can obtain another one. Finishing a task also needs to mean something in the product, rather than being inferred from the fact that the assistant has stopped talking.
+
+I would like an option where the assistant disconnects after a task and asks again when it needs access later. Repeating authorization would add friction, but I suspect some users would happily accept that cost for sensitive accounts. I wouldn’t assume that keeping an account connected indefinitely is always the better experience.
+
+A company could build narrow permissions around Poppy, but a protocol alone won’t make every provider offer access to individual conversations or task-bound expiry. Those choices still need to show up in the service and in a consent experience people can understand.
+
+***There is enough here to take seriously without assuming adoption***
+
+The [**path to 1.0**](https://personalagentprotocol.org/docs/path-to-1) lists design partners across personal assistants, retail, travel, banking and technology providers. It also identifies unresolved work, including payments, push notifications, attachments and self-hosted agents. Those are substantial parts of an assistant’s eventual experience, and being listed as a partner doesn’t establish that a company has deployed support.
+
+The draft is changing in public, with a [**review of its alignment with OAuth and agent identity work**](https://github.com/personal-agent-protocol/personal-agent-protocol/issues/35) alongside implementation questions. I prefer seeing those questions worked through while revisions can still change the design, even if it makes a review like this age fairly quickly.
+
+I’m hopeful that a shared protocol will make it easier for assistants to work across companies without requiring a separate arrangement for every task. I’m also interested in whether the choices it enables will be offered to users. Being able to authorize a small piece of work and have the access end afterwards would make me much more comfortable using an assistant for things I currently hesitate to hand over.
