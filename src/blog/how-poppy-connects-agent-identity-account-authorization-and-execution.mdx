@@ -9,9 +9,11 @@ date: "2026-10-25"
 ---
 
 
-An agent working on a customer’s behalf might use an API to retrieve a booking, a website to inspect an option that the API doesn’t expose, and a support conversation to resolve an exception. The task is continuous from the customer’s perspective, but the company may handle each interface through a different authentication and execution path.
+An assistant handling an expense claim might retrieve a transaction through an API, open a website to attach a receipt, and contact support when the reimbursement gets stuck. From the person’s perspective, it’s still one task, but each interface may have a different way of identifying the assistant and deciding what it can do.
 
-Poppy, or Personal Agent Protocol, defines a common session and authorization model around those interactions. Its design brings together discovery, agent identity, OAuth grants, browser access and conversations, with an optional extension for confirming individual actions.
+Poppy, or Personal Agent Protocol, connects those interactions through a common session and authorization model. It covers discovery, agent identity, OAuth grants, browser access and conversations, with an optional extension for confirming individual actions.
+
+The engineering appeal is that a company could support delegated tasks without building a separate account relationship for every interface. I think the technical case for that approach depends on how consistently the task’s authority survives a change of interface. This review works through the mechanisms using different hypothetical workflows, including the places where the protocol leaves a consequential decision to the systems implementing it.
 
 This review follows the working 0.3 draft as of October 25, 2026. [**Version 0.2 was published on October 24**](https://personalagentprotocol.org/docs/changelog), and some of the mechanisms discussed here are changes proposed for 0.3. The examples are abbreviated and use placeholder values.
 
@@ -26,11 +28,11 @@ Relevant fields in the company’s discovery document might be:
 ```json
 {
   "organization": {
-    "name": "Example Travel",
-    "domain": "travel.example"
+    "name": "Example Supplies",
+    "domain": "supplies.example"
   },
   "auth": {
-    "issuer": "https://auth.travel.example"
+    "issuer": "https://auth.supplies.example"
   }
 }
 ```
@@ -39,15 +41,17 @@ The issuer’s metadata would include:
 
 ```json
 {
-  "issuer": "https://auth.travel.example",
-  "protected_resources": ["https://travel.example"],
-  "scopes_supported": ["bookings:read", "bookings:write"]
+  "issuer": "https://auth.supplies.example",
+  "protected_resources": ["https://supplies.example"],
+  "scopes_supported": ["quotes:read", "orders:write"]
 }
 ```
 
 The [**0.3 changes**](https://personalagentprotocol.org/docs/changelog) also restrict discovery redirects to a final URL at the well-known path. Together, those checks establish a relationship between the document’s location and the issuer it names, rather than accepting either claim in isolation.
 
-Discovery also introduces fetches of documents controlled by another party. Redirect handling, response sizes and network destinations therefore become part of the integration’s security model. The [**implementation guides recommend constraints on those fetches**](https://personalagentprotocol.org/docs/0.3/guides), which is particularly relevant when the service retrieving metadata can reach internal infrastructure.
+Discovery also introduces fetches of documents controlled by another party. The [**implementation guides recommend limits on redirects, response sizes and network destinations**](https://personalagentprotocol.org/docs/0.3/guides), particularly when the service retrieving metadata can reach internal infrastructure.
+
+A procurement assistant could use this to reach an approved supplier that outsources its authorization service. Starting from the supplier’s known domain gives it a checkable route to that service. I like that the affiliation is inspectable in both directions, particularly when the login infrastructure belongs to another organization. The checks establish the claimed domain relationship, while the buyer’s policy still determines which suppliers the assistant is allowed to purchase from.
 
 ***Agent identity and session identity are separate***
 
@@ -61,7 +65,7 @@ The grant assertion includes claims of this form:
 {
   "iss": "https://assistant.example/client.json",
   "sub": "opaque_user_for_this_company",
-  "aud": "https://auth.travel.example"
+  "aud": "https://auth.shop.example"
 }
 ```
 
@@ -75,7 +79,9 @@ In 0.3, the session key’s thumbprint identifies the session, replacing the ear
 
 Those fields constrain where and how a copied proof can be used, but they do not constitute approval of the complete business request. The proof does not generally cover the HTTP body, and its target URI excludes the query component. An authenticated request can consequently still contain an action or parameters outside the caller’s authority.
 
-The guides also distinguish request signing from model execution by keeping private keys and credentials outside model context. That supports an architecture in which application code signs requests on the model’s behalf without making the model a holder of the underlying credentials.
+The guides also keep private keys and credentials outside model context. Application code can sign requests on the model’s behalf without making the model a holder of the underlying credentials.
+
+Consider an assistant checking a shop’s return policy before accessing a customer’s order. Recognizing the agent and its pseudonymous user before account sign-in lets that interaction start without immediately requesting order access. The separation makes sense to me because identifying the software, recognizing its user and granting access to an account answer different questions. The fresh session key also gives the session its own cryptographic identity, but it doesn’t by itself restrict which returns the assistant can initiate.
 
 ***Account authorization builds on OAuth grants***
 
@@ -83,7 +89,7 @@ Direct Sign-In uses the authorization code flow with [**PKCE**](https://www.rfc-
 
 Poppy calls the resulting access token a Session Token and the refresh token an Account Token. Their underlying [**OAuth roles**](https://www.rfc-editor.org/rfc/rfc6749) remain familiar: an access token is presented to a protected resource, while a refresh token obtains subsequent access tokens.
 
-The company defines its own scopes in 0.3. A hypothetical travel service could use `bookings:read` for itinerary retrieval and `bookings:write` for changes. The protocol requires those scopes to be enforced across the supported interfaces, including actions performed through the company’s conversational agent.
+The company defines its own scopes in 0.3, rather than prescribing one universal set of agent permissions. The protocol requires those scopes to be enforced across the supported interfaces, including actions performed through the company’s conversational agent.
 
 This means scope enforcement extends beyond the API gateway. If a support tool executes with broader service credentials, the connection between the caller’s grant and the tool’s authority still has to be preserved. Passing the scopes into a prompt supplies context but does not enforce them at execution time.
 
@@ -91,7 +97,9 @@ The company also keeps session and grant records, including the account associat
 
 [**Token revocation**](https://www.rfc-editor.org/rfc/rfc7009) affects the relationship between that stored state and already-issued access tokens. A self-contained token can remain cryptographically valid after its grant is revoked. Whether it remains usable depends on invalidation, a current-state check or the remaining token lifetime.
 
-The [**draft’s account of what it adds to OAuth**](https://personalagentprotocol.org/docs/0.3/spec#what-poppy-adds-to-oauth) also identifies custom work for the self-issued session grant. Reusing OAuth request formats and cryptography does not imply that an existing authorization server already supports Poppy’s session semantics.
+The [**draft’s account of what it adds to OAuth**](https://personalagentprotocol.org/docs/0.3/spec#what-poppy-adds-to-oauth) also identifies custom work for the self-issued session grant. Existing OAuth infrastructure supplies useful components, but supporting Poppy still involves implementing its session semantics.
+
+For a calendar assistant, a hypothetical `calendar:read` grant could cover checking availability, while `calendar:write` could cover creating or changing events. That’s a useful boundary, but a write grant may still permit both moving a private reminder and sending an invitation to two hundred people. My concern is how easily a broad account permission can be mistaken for permission to complete a particular task. Poppy carries the grant across interfaces, while the application still needs a way to represent the narrower instruction and decide when additional approval is necessary.
 
 ***The same session can be used through different interfaces***
 
@@ -105,11 +113,17 @@ The website then evaluates requests under that session’s scopes. This lets bro
 
 Using the person’s already-authenticated browser is still an [**open design discussion**](https://github.com/personal-agent-protocol/personal-agent-protocol/issues/32). A person and an agent sharing the same cookies creates an attribution problem: signed requests can identify cooperative agent activity, but an unsigned request is not necessarily evidence of human activity.
 
+For an expense assistant, the API might expose transaction data while receipt attachment is available only through the website. Sharing authorization context avoids a second, unrelated login for that step. I think this is one of Poppy’s more practical design choices, provided the website actually enforces the assistant’s grant. Giving the assistant the employee’s fully authenticated browser could instead expose reimbursement settings or payment details outside that grant, which makes browser isolation part of the authorization argument, not just a convenience for managing cookies.
+
+***Conversations preserve context through retries and handoffs***
+
 Conversations add another kind of persistent state. The official [**conversation implementation pattern**](https://github.com/personal-agent-protocol/personal-agent-protocol/blob/main/skills/implement-personal-agent-protocol/patterns/conversations.md) describes an adapter with an ordered event log, cursors and message-ID deduplication in front of an existing support platform.
 
 `status` records whether work is ongoing, idle, queued or closed, while `responder` identifies whether a human or agent is handling the company side. Message deduplication allows a retried initial request to recover the existing conversation instead of creating a second one.
 
-A handoff therefore changes who responds without inherently granting more authority. The conversation’s account context and the permissions applied to its tools remain relevant even when the next step is handled by a different model or a person.
+A handoff changes who responds without inherently granting more authority. The conversation’s account context and the permissions applied to its tools remain relevant even when the next step is handled by a different model or a person.
+
+Imagine an assistant disputing a broadband bill. The company’s agent may need to refer the case to a person, and a dropped connection shouldn’t create a second dispute or lose the first response. Stable conversation and message identifiers help preserve that continuity. I think the separation of responder from status is useful here: a case being assigned to a human tells the assistant something about who is handling it, but it says nothing by itself about whether a credit has been issued. The conversation can carry the negotiation, while a consequential adjustment still needs an explicit outcome.
 
 ***Operations ties confirmation to a particular set of terms***
 
@@ -152,12 +166,12 @@ That requirement has consequences for the execution adapter. Recording a confirm
 
 The record also has a specific evidentiary limit. It establishes that the personal agent asserted approval of a revision, but it does not independently establish that the person saw or approved those terms. The extension explicitly acknowledges that trust boundary.
 
-***My assessment***
+In the hotel example, a price change while the person is considering the proposal needs a new revision, and a timeout after confirmation needs recovery of the existing operation. Booking another room would be a poor response to uncertainty about the first one. I think this is the strongest part of the design because it gives approval and recovery a shared business record, beyond the lifetime of one HTTP request. Its value still depends on the execution system preserving those semantics, and the approval assertion leaves the company relying on the agent’s account of what the person authorized.
 
-Poppy’s useful contribution is the way it connects mechanisms that would otherwise be implemented separately. A company can retain its APIs and support infrastructure while exposing a common account and session context to a personal agent. The operation record adds a way to reason about a consequential action across confirmation, retries and an uncertain outcome.
+***Where this leaves the integration***
 
-That seems technically valuable to me, particularly for tasks that naturally cross interfaces. The design also makes the work left to the surrounding systems fairly visible. A session identifies the relevant authority, but carrying that authority into a support tool or a downstream execution service is still an integration problem.
+Across these examples, Poppy gives the company and the personal agent a common way to refer to the actor, the account grant, the ongoing interaction and, when the extension is used, the proposed action. That could remove a considerable amount of bespoke coordination between interfaces, although it still leaves meaningful engineering work behind each one.
 
-I don’t think an authenticated request is a sufficient unit for evaluating whether that integration is constrained. If the API rejects an action but the same agent can complete it through a browser session or support tool, correct signatures and token validation have not established the intended restriction. The useful unit of analysis is the action and the paths available to perform it.
+The part I keep coming back to is whether a restriction survives every available route to an action. If an API rejects a change but a browser session or support tool can complete it under broader credentials, the signatures can all be correct while the delegation is still too broad. That’s an integration problem the protocol helps describe, even where it doesn’t supply the enforcement.
 
-The [**path to 1.0**](https://personalagentprotocol.org/docs/path-to-1) still includes unresolved work around payments, push notifications, attachments and self-hosted agents. The shared-browser discussion is a particularly concrete example of why those questions deserve more than a convenient interface: giving the agent access to an existing session can also give it a path outside the authority represented by its own grant.
+The [**path to 1.0**](https://personalagentprotocol.org/docs/path-to-1) includes further work around payments, push notifications, attachments and self-hosted agents. As those capabilities develop, I think the most revealing cases will be ordinary tasks that encounter an exception: the missing receipt, the disputed bill or the booking whose result is uncertain. Those are the points where an assistant needs to keep working, but carrying the task forward shouldn’t quietly expand what it has permission to do.
