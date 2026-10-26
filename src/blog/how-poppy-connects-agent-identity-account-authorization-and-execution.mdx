@@ -13,9 +13,11 @@ Imagine asking an assistant to find satellite imagery of a wildfire so you can c
 
 Poppy, or Personal Agent Protocol, connects those interactions through a common session and authorization model. It covers discovery, agent identity, OAuth grants, browser access and conversations, with an optional extension for confirming individual actions.
 
-The engineering appeal is that a company could support delegated tasks without building a separate account relationship for every interface. I think the technical case for that approach depends on how consistently the task’s authority survives a change of interface. This review works through the mechanisms using different hypothetical workflows, including the places where the protocol leaves a consequential decision to the systems implementing it.
+The engineering appeal is that a company could support delegated tasks without building a separate account relationship for every interface. I think the technical case for that approach depends on how consistently the task’s authority survives a change of interface.
 
-This review follows the working 0.3 draft as of October 25, 2026. [**Version 0.2 was published on October 24**](https://personalagentprotocol.org/docs/changelog), and some of the mechanisms discussed here are changes proposed for 0.3. The workflows below are hypothetical examples of what companies supporting the relevant parts of Poppy could offer. Code examples are abbreviated and use placeholder values.
+*Author’s note: This started as a protocol overview, but I wanted concrete examples to work through the design choices. It has consequently acquired a synthesizer, a concert ticket sale and an auction.*
+
+This review follows the working 0.3 draft as of October 25, 2026. [**The changelog lists 0.3 as in progress and dates the publication of 0.2 to October 24**](https://personalagentprotocol.org/docs/changelog). The workflows below are hypothetical examples of what companies supporting the relevant parts of Poppy could offer. Code examples are abbreviated and use placeholder values.
 
 ***Discovery links a company’s domain to its authorization service***
 
@@ -99,7 +101,7 @@ The company also keeps session and grant records, including the account associat
 
 The [**draft’s account of what it adds to OAuth**](https://personalagentprotocol.org/docs/0.3/spec#what-poppy-adds-to-oauth) also identifies custom work for the self-issued session grant. Existing OAuth infrastructure supplies useful components, but supporting Poppy still involves implementing its session semantics.
 
-Consider a researcher asking an assistant to find available GPUs and run an experiment overnight, with a total budget of $300. A hypothetical `instances:create` scope could permit provisioning, but it doesn’t express that budget. Three parallel workers could each see a $120 reservation as affordable while committing $360 together, even before the charges settle. This is where I think the separation between account access and task authority becomes particularly consequential. Poppy can carry the provisioning grant, while enforcing the researcher’s instruction requires shared accounting for running instances and pending reservations. A valid token doesn’t resolve that coordination problem.
+Consider a researcher asking an assistant to rent GPUs, the chips used for much AI training, and run an experiment overnight with a total budget of $300. A hypothetical `instances:create` scope could permit renting the machines, but it doesn’t express that budget. If three parts of the assistant work at once, each could book $120 of computing time and collectively commit $360 before any of the charges appear on the bill. This is where I think the separation between account access and task authority becomes particularly consequential. Poppy can carry the provisioning grant, while enforcing the researcher’s instruction requires shared accounting for running instances and pending reservations. A valid token doesn’t resolve that coordination problem.
 
 ***The same session can be used through different interfaces***
 
@@ -113,7 +115,7 @@ The website then evaluates requests under that session’s scopes. This lets bro
 
 Using the person’s already-authenticated browser is still an [**open design discussion**](https://github.com/personal-agent-protocol/personal-agent-protocol/issues/32). A person and an agent sharing the same cookies creates an attribution problem: signed requests can identify cooperative agent activity, but an unsigned request is not necessarily evidence of human activity.
 
-In the satellite imagery example, the assistant could query acquisition dates through the API, then use the provider’s interactive map to select the geographic area. Sharing session context makes that combination practical without requiring the provider to expose every feature through one interface. I think this is a compelling reason to include browser access in the protocol, especially for services whose visual tools carry information that an API doesn’t expose. The browser still needs to respect the agent’s grant: borrowing the person’s full session could also expose billing controls or imagery projects outside the task. Sharing context is useful only if the narrower authority survives the change of interface.
+In the satellite imagery example, the assistant could check when each image was taken through the API, then use the provider’s interactive map to select the geographic area. Sharing session context makes that combination practical without requiring the provider to expose every feature through one interface. I think this is a compelling reason to include browser access in the protocol, especially for services whose visual tools carry information that an API doesn’t expose. The browser still needs to respect the agent’s grant: borrowing the person’s full session could also expose billing controls or imagery projects outside the task. Sharing context is useful only if the narrower authority survives the change of interface.
 
 ***Conversations preserve context through retries and handoffs***
 
