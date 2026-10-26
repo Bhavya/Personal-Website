@@ -1,0 +1,162 @@
+---
+title: "How Poppy connects agent identity, account authorization and execution"
+description: "A technical review of Poppy’s working 0.3 draft: discovery, JWT assertions, DPoP session keys, OAuth grants, browser and conversation boundaries, and operation recovery."
+tags:
+  - AI
+  - Infrastructure
+  - Security
+date: "2026-10-25"
+---
+
+An agent integration gets more complicated when it can move between a website, an API and a support conversation while acting for the same person. Those interfaces may have different authentication systems and different assumptions about what an authenticated caller is allowed to do.
+
+Poppy, or Personal Agent Protocol, tries to give that interaction a common structure. I’ve been looking at how its discovery, identity, authorization and execution mechanisms fit together, and what a company would actually have to implement.
+
+This review follows the working 0.3 draft as of October 25, 2026. [**Version 0.2 was published on October 24**](https://personalagentprotocol.org/docs/changelog), and some of the mechanisms below are changes proposed for 0.3. The examples are illustrative excerpts with placeholder values.
+
+***Discovery establishes which company and authorization server the agent is dealing with***
+
+A company publishes `/.well-known/poppy.json` to advertise its interfaces and authorization issuer. The agent then retrieves the issuer’s [**OAuth authorization server metadata**](https://www.rfc-editor.org/rfc/rfc8414), which supplies endpoints and supported grants.
+
+There are two documents to check, rather than one document to trust because it arrived over HTTPS. In 0.3, the company domain must match the host serving its discovery document, and the issuer’s metadata must point back through `protected_resources`. The issuer value must also match `auth.issuer`.
+
+Relevant fields might look like this, with other required fields omitted:
+
+```json
+{
+  "organization": {
+    "name": "Example Travel",
+    "domain": "travel.example"
+  },
+  "auth": {
+    "issuer": "https://auth.travel.example"
+  }
+}
+```
+
+The issuer’s metadata would include:
+
+```json
+{
+  "issuer": "https://auth.travel.example",
+  "protected_resources": ["https://travel.example"],
+  "scopes_supported": ["bookings:read", "bookings:write"]
+}
+```
+
+The [**0.3 discovery changes**](https://personalagentprotocol.org/docs/changelog) also restrict the final redirect destination to the well-known path. These checks help prevent an unrelated domain or an uploaded document from claiming to represent another company’s authorization server.
+
+I would treat metadata retrieval as part of the security boundary. A service fetching arbitrary client metadata, keys and API descriptions needs limits on redirects, response sizes and network destinations. Otherwise, supporting discovery also creates a fairly convenient way to make your infrastructure fetch things it should not.
+
+***The provider’s identity and the session’s key have different jobs***
+
+The personal agent identifies itself through an HTTPS `client_id` that resolves to a metadata document. That document describes its signing keys and callback locations. Client authentication uses `private_key_jwt`, based on [**RFC 7523**](https://www.rfc-editor.org/rfc/rfc7523).
+
+Starting a session involves three distinct signed objects: a client assertion authenticating the agent, a grant assertion naming the user’s company-specific pseudonymous ID, and a DPoP proof from a fresh session key. The company verifies them before issuing a signed-out Session Token.
+
+The grant assertion’s relevant claims are:
+
+```json
+{
+  "iss": "https://assistant.example/client.json",
+  "sub": "opaque_user_for_this_company",
+  "aud": "https://auth.travel.example"
+}
+```
+
+A complete assertion also needs its timestamps and unique identifier. This excerpt is deliberately not a complete JWT.
+
+The initial token does not imply access to a customer account. It establishes an agent session that can later receive account authorization. I find that a useful separation for workflows that begin with a public enquiry and only later need a booking or order.
+
+In 0.3, the DPoP key’s thumbprint identifies the session; the earlier custom `session_id` parameter is removed. The provider’s published signing keys authenticate the provider, while each session has its own proof-of-possession key.
+
+[**DPoP, defined in RFC 9449**](https://www.rfc-editor.org/rfc/rfc9449), binds an access token to a key. Resource requests carry a fresh signed proof containing the HTTP method, target URI, issuance time and a hash of the access token, with a nonce when required.
+
+That proof does not generally sign the HTTP body, and its target URI excludes the query component. I would be careful about describing it as approval of an entire business request. It proves possession of a key under defined request constraints; deciding whether the request is permitted still requires authorization checks.
+
+The [**implementation guides**](https://personalagentprotocol.org/docs/0.3/guides) keep private keys and credentials outside model context. In an implementation, I would give the model access to a constrained operation and let trusted application code attach credentials and sign the request.
+
+***Account authorization uses OAuth, but the integration is not entirely off the shelf***
+
+Direct Sign-In uses the authorization code flow with [**PKCE**](https://www.rfc-editor.org/rfc/rfc7636). Device Sign-In uses the [**device authorization grant**](https://www.rfc-editor.org/rfc/rfc8628), allowing the person to authorize through another device. The working draft prefers these over Mediated Sign-In, where the agent submits the person’s credentials.
+
+After authorization, Poppy calls the access token a Session Token and the refresh token an Account Token. The underlying [**OAuth roles of access and refresh tokens**](https://www.rfc-editor.org/rfc/rfc6749) remain familiar: the first is presented to protected resources, while the second obtains subsequent access tokens.
+
+The company defines the available scopes in 0.3. An integration therefore needs a mapping from each scope to the operations permitted through every supported channel, including tools invoked by the company’s conversational agent.
+
+For a hypothetical travel service, I might map `bookings:read` to itinerary retrieval and reserve `bookings:write` for changes. If the support agent can change an itinerary without consulting those scopes, the API’s scope checks have not established an effective boundary.
+
+The draft also requires company-side session and grant records. A signed token does not remove the need to track the account association, granted authority and revocation state. An Account Token can authorize new sessions, so ending one session does not necessarily end the agent’s account access.
+
+[**OAuth revocation**](https://www.rfc-editor.org/rfc/rfc7009) introduces another implementation decision: already-issued access tokens need to stop working appropriately. Self-contained token verification alone cannot discover that a grant was revoked. An implementation needs an invalidation mechanism, a state check or a deliberately bounded residual lifetime.
+
+The [**draft’s discussion of its additions to OAuth**](https://personalagentprotocol.org/docs/0.3/spec#what-poppy-adds-to-oauth) also identifies custom work for the self-issued session grant. I would evaluate that against the authorization server I actually use before assuming Poppy can be enabled through configuration alone.
+
+***API access, browser access and conversations share context without becoming identical transports***
+
+Poppy can advertise OpenAPI APIs and remote MCP servers. DPoP is used where supported; a compatibility path for MCP servers without it uses [**OAuth Token Exchange**](https://www.rfc-editor.org/rfc/rfc8693) to obtain a Bearer token restricted to the target MCP resource.
+
+I would pay attention to that fallback because copying a Bearer token remains enough to use it within its authority and lifetime. Resource restriction contains its reach but does not give it proof-of-possession properties.
+
+Browser access uses a separate bridge. In 0.3, the company supplies a one-time code tied to a browser cookie. The agent signs a proof using its session key, and successful verification lets the company set the corresponding session cookie. The guides recommend isolated browser storage for each session.
+
+The resulting website requests must respect the same scopes as the APIs. Adding a scoped API while leaving an equivalent browser action unrestricted would give the agent a second path around the intended restriction.
+
+Using the person’s already-authenticated browser is still an [**open design discussion**](https://github.com/personal-agent-protocol/personal-agent-protocol/issues/32). An agent and a person sharing the same cookies make attribution harder. Identifying signed agent requests does not establish that every unsigned request came from the person.
+
+Conversations introduce another form of state. The official [**conversation implementation pattern**](https://github.com/personal-agent-protocol/personal-agent-protocol/blob/main/skills/implement-personal-agent-protocol/patterns/conversations.md) describes an adapter with an ordered event log, cursors, message-ID deduplication and mappings to an existing support platform.
+
+`status` describes whether work is ongoing, idle, queued or closed, while `responder` identifies whether a human or agent handles the company side. A retry of the initial message must recover the existing conversation rather than silently create another one.
+
+I would keep authorization in the support tools themselves. Passing account context into a prompt is useful, but a conversation reaching a human or another model should not create a route around the original access checks.
+
+***Operations binds confirmation to an action’s revision***
+
+The optional [**Operations extension**](https://personalagentprotocol.org/docs/0.3/extensions/operations) adds a shared action record. A company proposes an operation, the agent obtains approval for its terms, and a confirmation names the approved revision. The agent can then read the operation’s status and result.
+
+For example, an abbreviated proposal might be:
+
+```json
+{
+  "operation_id": "booking_42",
+  "revision": 2,
+  "state": "proposed",
+  "summary": "Book one room for October 30–31 for USD 240, non-refundable.",
+  "terms": {
+    "arrival": "2026-10-30",
+    "departure": "2026-10-31",
+    "total": { "amount": "240.00", "currency": "USD" },
+    "refundable": false
+  },
+  "expires_at": "2026-10-26T12:00:00Z",
+  "confirmation": null,
+  "result": null
+}
+```
+
+Confirmation refers to that revision:
+
+```json
+{
+  "revision": 2,
+  "approved_by": "user"
+}
+```
+
+The company checks the current revision, required scopes, expiry and permitted approval mode before execution. Confirmation can also rely on a covering standing permission when the operation allows it.
+
+A repeated confirmation must not execute the operation twice. If a downstream request times out and the company cannot establish its outcome, the operation remains in progress rather than being reported as failed.
+
+The execution adapter has to preserve that guarantee across its downstream calls. Recording confirmation and sending work to another system can fail between steps, so the implementation needs durable dispatch, downstream idempotency or reconciliation as appropriate. A protocol-level operation ID does not automatically make a non-idempotent dependency safe to retry.
+
+The approval record is also an assertion by the personal agent. It does not independently prove that the person saw the terms. The extension explicitly acknowledges that limitation, which is important when deciding whether a particular action needs company-controlled confirmation.
+
+***The implementation work is in preserving the boundaries across systems***
+
+My reading is that a substantial Poppy integration reaches into authorization, API gateways, browser sessions, support tooling and execution recovery. Implementing a discovery file and a token endpoint would cover only part of that work.
+
+I would test the boundaries with failures that cross those components: a revoked grant with an unexpired token, a conversation tool trying an operation outside its scopes, a browser action that has no API equivalent, or a lost confirmation response after a downstream system has accepted the work.
+
+The [**path to 1.0**](https://personalagentprotocol.org/docs/path-to-1) still lists payments, push notifications, attachments and self-hosted agents as open topics. Those omissions are worth accounting for when choosing a first integration, but they do not make the existing session and operation mechanics uninteresting.
+
+The API, browser and support tools need to enforce the same authorization rules. If an agent’s API request is rejected but it can complete the same action through the browser, the restriction hasn’t held. Request signatures can help attribute that activity, but enforcement depends on checking the agent’s authority wherever the action can be performed.
