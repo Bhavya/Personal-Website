@@ -102,7 +102,7 @@ Browser access uses a separate bridge. In 0.3, the company supplies a one-time c
 
 The resulting website requests must respect the same scopes as the APIs. Adding a scoped API while leaving an equivalent browser action unrestricted would give the agent a second path around the intended restriction.
 
-Using the person’s already-authenticated browser is still an [**open design discussion**](https://github.com/personal-agent-protocol/personal-agent-protocol/issues/32). I’m interested in it, but an agent and a person sharing the same cookies make attribution harder. Identifying signed agent requests does not establish that every unsigned request came from the person.
+Using the person’s already-authenticated browser is still an [**open design discussion**](https://github.com/personal-agent-protocol/personal-agent-protocol/issues/32). An agent and a person sharing the same cookies make attribution harder. Identifying signed agent requests does not establish that every unsigned request came from the person.
 
 Conversations introduce another form of state. The official [**conversation implementation pattern**](https://github.com/personal-agent-protocol/personal-agent-protocol/blob/main/skills/implement-personal-agent-protocol/patterns/conversations.md) describes an adapter with an ordered event log, cursors, message-ID deduplication and mappings to an existing support platform.
 
@@ -147,7 +147,7 @@ The company checks the current revision, required scopes, expiry and permitted a
 
 A repeated confirmation must not execute the operation twice. If a downstream request times out and the company cannot establish its outcome, the operation remains in progress rather than being reported as failed.
 
-That would make me look closely at the execution adapter. Recording confirmation and sending work to another system can fail between steps, so the implementation needs durable dispatch, downstream idempotency or reconciliation as appropriate. A protocol-level operation ID does not automatically make a non-idempotent dependency safe to retry.
+The execution adapter has to preserve that guarantee across its downstream calls. Recording confirmation and sending work to another system can fail between steps, so the implementation needs durable dispatch, downstream idempotency or reconciliation as appropriate. A protocol-level operation ID does not automatically make a non-idempotent dependency safe to retry.
 
 The approval record is also an assertion by the personal agent. It does not independently prove that the person saw the terms. The extension explicitly acknowledges that limitation, which is important when deciding whether a particular action needs company-controlled confirmation.
 
@@ -159,4 +159,6 @@ I would test the boundaries with failures that cross those components: a revoked
 
 The [**path to 1.0**](https://personalagentprotocol.org/docs/path-to-1) still lists payments, push notifications, attachments and self-hosted agents as open topics. Those omissions are worth accounting for when choosing a first integration, but they do not make the existing session and operation mechanics uninteresting.
 
-I’m most interested in whether implementations preserve the same authority when an agent changes interfaces or resumes after a failure. A company can expose several convenient ways to complete a task, but each one still needs to arrive at the same decision about what that agent is allowed to do.
+I’ve started contributing to the protocol’s issue discussions, including [**how to distinguish agent activity from human activity in a shared browser session**](https://github.com/personal-agent-protocol/personal-agent-protocol/issues/32). That is one place where identifying an agent and constraining its authority can come apart.
+
+The boundary I’m working through is whether an agent can reach the same action through a different interface with fewer restrictions. If an API rejects a request because the grant does not cover it, the browser session and support tools need to reject it too. I want to work through those alternate paths when evaluating the design, because a correctly verified request on one path tells us very little about what another path permits.
