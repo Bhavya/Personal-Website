@@ -1,0 +1,48 @@
+---
+title: "A good handover can’t fix a team that’s overcommitted"
+description: "When someone has to stay reachable during leave, the roadmap may be relying on capacity the team doesn’t actually have."
+tags:
+  - Engineering Leadership
+  - Engineering Management
+date: "2026-10-26"
+---
+
+Imagine an engineer preparing for two weeks off. They write a handover, walk someone through the release process and list the things that might need attention. Their leave is approved, but the arrangement still includes “we’ll message you if we get stuck.”
+
+That can sound like a reasonable precaution. It also means the team hasn’t quite planned for their absence. It has planned for them to be somewhere else while remaining available.
+
+I think a team in that position often needs to reduce its commitments before asking for a more thorough handover. Time to build coverage has to come from somewhere, and if every engineer is already committed to delivery work, the roadmap is spending capacity that doesn’t exist. Waiting until the week before someone leaves makes that much harder to correct.
+
+***The dependency can be a consequence of getting things done***
+
+Consider a team where one engineer knows the release pipeline unusually well. Asking them is faster than investigating, so they answer the deployment questions. They also handle the awkward rollback and explain which alerts are harmless. Each choice is locally sensible, and the team keeps shipping.
+
+Over time, another engineer might know how to run a release without having enough experience to decide when to stop one. The first person is still needed for the judgement around the procedure, even if everyone technically has access to the same tools.
+
+This doesn’t require anyone to be hoarding knowledge. The knowledgeable person may have been answering questions and offering to pair for months. If everyone else has a full project load, learning the system can keep losing to the work with an immediate deadline.
+
+Google’s SRE book describes [**protecting at least half of an SRE’s time for engineering projects rather than purely operational work**](https://sre.google/sre-book/being-on-call/). That ratio belongs to a particular operating model, but I like the underlying decision to put an explicit limit on work that can otherwise consume the team. The work needed to make tomorrow easier has a claim on capacity today.
+
+Building coverage needs a similar claim. Treating it as something people will fit between projects makes its priority fairly clear, regardless of how often the team says it matters.
+
+***A document can’t supply all the missing judgement***
+
+A handover can explain where the deployment controls are and how to roll back an application. It may not give another engineer enough confidence to decide whether rolling back is safe after a database change. That judgement depends on understanding the system and having worked through the consequences.
+
+Google’s [**SRE onboarding guidance combines documentation with shadowing, realistic failure exercises and meaningful project ownership**](https://sre.google/sre-book/accelerating-sre-on-call/). It explicitly cautions against training people only through procedures and checklists. Those are recommendations for SRE teams, but the reasoning applies to plenty of product teams too.
+
+My objection is to making the handover document responsible for a capability the team hasn’t had time to develop. Asking the departing engineer to add more detail can help, but another twenty pages won’t necessarily make someone comfortable making an unfamiliar production decision.
+
+The useful evidence is whether someone else can do the work and explain their reasoning while the experienced person is still there to help. Finding a gap then gives the team a chance to address it without interrupting a holiday or improvising during an incident.
+
+***Coverage has to displace something***
+
+Suppose a team has committed to a migration and a launch, and the same engineer is the escalation point for both. Giving another person real responsibility for one of those systems takes time from the learner and the person helping them. There may also be tooling or access problems that only become visible once they try.
+
+Keeping the delivery dates unchanged while adding that work is another commitment. Calling it knowledge sharing doesn’t make it free.
+
+My preference is to make the trade-off visible while there is still time to choose: narrow the launch, move part of the migration or explicitly accept the operational risk. Another person learning to own a system should count as engineering progress, even when that means shipping less that month. Otherwise the team keeps rewarding the arrangement it says it wants to change.
+
+There are exceptions. A very small company may knowingly depend on one specialist, and an extraordinary incident may justify asking for help. Nobody can guarantee that a person will never be needed. The concern is a routine plan that quietly assumes they will remain reachable.
+
+If a team’s delivery dates only work because someone agrees to answer messages from their holiday, I don’t think those dates describe its actual capacity. Before the next planning cycle adds more work, the manager needs to decide what can wait so that the person can actually be away.
