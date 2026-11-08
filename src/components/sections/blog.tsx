@@ -11,7 +11,18 @@ export const Blog = ({ blogs, tag }: BlogSectionProps) => {
     return (
         <section className="py-14 sm:py-20">
             <div className="mb-12 border-b border-border pb-10">
-                <p className="editorial-label mb-4">{tag ? `Tagged: ${tag}` : 'Writing'}</p>
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+                    <p className="editorial-label">{tag ? `Tagged: ${tag}` : 'Writing'}</p>
+                    {!tag && (
+                        <a
+                            href="/blog/rss.xml"
+                            type="application/rss+xml"
+                            className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+                        >
+                            RSS feed
+                        </a>
+                    )}
+                </div>
                 <h1 className="font-serif text-5xl font-normal tracking-[-0.04em] sm:text-7xl">
                     {tag || 'Things I’ve been thinking about.'}
                 </h1>
