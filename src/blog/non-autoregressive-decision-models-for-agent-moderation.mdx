@@ -1,0 +1,59 @@
+---
+title: "Non-autoregressive decision models for agent moderation"
+description: "How direct prediction and calibrated probabilities can support agent moderation, using Laya’s open-source architecture as an example."
+tags:
+  - AI
+  - Infrastructure
+  - Security
+date: "2026-11-07"
+---
+
+A patient asks a healthcare provider’s website assistant whether an earlier appointment is available. The assistant finds an opening and prepares to cancel the existing booking, even though the patient hasn’t agreed to the change. Both bookings may belong to the right person, and the API permissions may be valid, but the proposed action still goes beyond the request.
+
+Non-autoregressive decision models are well suited to these repeated semantic checks because they produce structured predictions without generating a written response. That makes them a strong candidate for the moderation layer around agents, where checking each proposed action needs to be computationally affordable.
+
+***Direct prediction without autoregressive decoding***
+
+An autoregressive language model generates output tokens sequentially, conditioning each one on the preceding context and previously generated tokens. It can return a short label or constrained JSON, so using an LLM to evaluate an action doesn’t require a lengthy explanation, but it still involves decoding an output sequence.
+
+A non-autoregressive decision model instead computes scores over a defined answer space. For the scheduling assistant, a question could ask whether the patient authorized the proposed cancellation. A binary decision returns a probability, while a choice question returns a distribution over the supplied alternatives.
+
+The input still passes through multiple neural-network layers. The computational difference is that answering doesn’t require a sequence of generated tokens, each dependent on the last.
+
+This builds on established classification methods. A language-defined decision interface allows the application to supply its questions and candidate answers at request time, rather than requiring a separate fixed-label classifier for each task.
+
+***Laya as an open-source architecture example***
+
+**GitHub repository: [github.com/NandhaKishorM/laya](https://github.com/NandhaKishorM/laya)**
+
+Laya provides a concrete example because its open-source implementation exposes how the predictions are computed. Its English model uses a bidirectional ModernBERT encoder, which builds contextual representations using information before and after each token. [**The ModernBERT paper describes the encoder’s design and evaluation**](https://arxiv.org/abs/2412.13663).
+
+The state is combined with a question and its candidate answers, with a marker position assigned to each option. Additional transformer layers process the representations before a scoring network assigns a logit to each marker. A softmax then converts these logits into probabilities for the question.
+
+The model scores the supplied alternatives directly, and the SDK constructs the structured response from its numerical predictions. There’s no generated JSON to parse.
+
+Because the candidate descriptions are part of the input, the interface can accept a new answer set without replacing the output layer. That flexibility doesn’t establish accuracy on a new task, however, and domain-specific evaluation is still necessary.
+
+***Structured classification and deterministic handling***
+
+Classification can also make operational problems easier to diagnose consistently. A patient saying “my appointment has disappeared” could mean that a booking was never completed or that a confirmed booking isn’t appearing in the portal. Given the patient’s message and records retrieved from the scheduling system, a model could classify the issue as `booking_not_created` or `portal_display_mismatch`.
+
+The application can map these categories to defined workflows. A missing booking requires checking whether an attempted reservation succeeded before trying again, while a display mismatch calls for reconciling the portal with the existing booking. The patient’s wording can vary without requiring the application to interpret a newly generated explanation every time.
+
+The deterministic part is the mapping from a validated category to its handling rules. The classification remains a prediction, and selecting a label doesn’t establish the underlying cause. Conflicting records should trigger further investigation rather than make the application commit to a diagnosis it can’t support.
+
+***Probability calibration and decision thresholds***
+
+Laya’s [**model card describes reinforcement learning with proper scoring rules**](https://huggingface.co/convaiinnovations/laya#training). These reward the predicted distribution rather than only whether its highest-probability answer is correct, and under the scoring rule’s assumptions the true distribution maximizes expected reward.
+
+The objective doesn’t guarantee calibrated predictions in deployment. If answers assigned 90% confidence are correct only 70% of the time on representative examples, a threshold of 90% supplies much less protection than it appears to. Laya’s documentation acknowledges calibration limits and the importance of domain specialization.
+
+Avoiding text generation prevents malformed generated responses, but the model can still select an incorrect answer. Truncating the input may remove the evidence needed to classify an action, and a misleading tool response can distort the evidence that remains.
+
+***The model’s role in moderation***
+
+For the scheduling assistant, a decision model could flag that cancelling the existing appointment exceeds the patient’s request before the cancellation operation runs. The application could then pause execution and request clarification, with its policy determining whether the action can proceed. This is a proposed use of the architecture, rather than a guarantee it supplies.
+
+Permission checks and exact limits still belong in enforceable application logic. The model also needs evidence from sources beyond the acting agent’s own account of its behaviour, or a confident classification may simply endorse a misleading summary.
+
+I expect these models to become key components of agent moderation because they make repeated semantic checks more practical. The difficult engineering work includes establishing which questions they can answer reliably and ensuring that an uncertain answer changes what the agent is allowed to do next.
