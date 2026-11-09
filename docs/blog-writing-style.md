@@ -32,6 +32,7 @@ I want my articles to sound like an intelligent person working through an idea w
 - Vary sentence length naturally. I generally prefer flowing sentences and developed paragraphs over a succession of short, emphatic statements.
 - Avoid excessive one-sentence paragraphs.
 - Use contractions where they sound natural.
+- Avoid “I would” and “I’d” in article prose. State the opinion or preference directly.
 - Preserve conversational asides and qualifications when they add something to the writing.
 - Don't polish away distinctive or slightly unusual phrasing purely to make the prose more conventional.
 
