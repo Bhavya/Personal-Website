@@ -27,6 +27,8 @@ I want my articles to sound like an intelligent person working through an idea w
 - Minimize unnecessary commas but prioritize grammatical clarity. Articles can use more punctuation than my social media posts.
 - Never use em dashes.
 - Don't begin sentences with conjunctions such as "And", "But" or "So". Connect those thoughts to the preceding sentence instead.
+- Generally avoid starting a sentence with "That". Name the subject or connect the thought to the preceding sentence.
+- Avoid "move", "moves", "sits" and "lands". Use a verb that says what actually happens.
 - Vary sentence length naturally. I generally prefer flowing sentences and developed paragraphs over a succession of short, emphatic statements.
 - Avoid excessive one-sentence paragraphs.
 - Use contractions where they sound natural.
