@@ -1,0 +1,100 @@
+---
+title: "AppSec is suddenly juicy in the age of AI"
+description: "Recent attacks show why app-security controls need another look. Here’s a practical checklist for protecting your app from malicious agents."
+tags:
+  - AI
+  - Security
+date: "2026-11-18"
+---
+
+Attackers exploited Optimizely’s account signup flow on November 16 to impersonate users and add malicious JavaScript to customer projects. According to [**Optimizely’s incident report**](https://pages.optimizely.com/rs/947-RKE-048/images/Security%20Incident%20Report%20-%20Optimizely%20Web%20Experimentation%20-%20Nov%2017%202026.pdf), they could act as administrators without stealing those administrators’ credentials. Customers had already put Optimizely’s scripts on their websites, so the malicious code could reach their visitors through an integration they trusted.
+
+[**Report URI’s investigation identified affected scripts belonging to 178 organizations**](https://report-uri.ghost.io/worlds-largest-brands-infected-with-malware-via-optimizely/), including the BBC and Zoom. These are established companies with engineering teams and security budgets, which makes the usual advice to “just stop vibe coding” feel a little inadequate.
+
+Optimizely’s report doesn’t establish that agents carried out this attack. Separately, though, [**Anthropic’s September 2026 threat report**](https://www.anthropic.com/threat-intelligence-report-september-2026) describes attackers using agents to execute parts of their operations, including reconnaissance and exploitation. Humans still selected targets and provided direction, but the work went beyond asking chatbots to explain vulnerabilities.
+
+Most of this is likely familiar application security, honestly. We’re still dealing with authorization failures and third-party code running with more access than people realized, but now agents give attackers another way to find and exploit those failures. We’re also connecting our own agents to privileged operations, so we have to account for what they’re allowed to do with that access.
+
+We’re making it easier to build software and delegate work to it, which is great, but the security controls still have to hold up when people use the product differently from how we intended.
+
+***Agents don’t have to follow your UI***
+
+Generally speaking, apps organize data into workspaces, with permissions dictating which users can access each one. If export endpoints only check that callers are logged in, changing the workspace ID could let them download another organization’s data. We might hide those other workspaces in the frontend, but that doesn’t help if the API accepts the requests anyway.
+
+By going straight to the endpoints, malicious agents skip whatever sequence of screens we’ve designed and use the responses to decide what to try next. We’ve had automated scanners for years, of course, but agents introduce the possibility of handling more of the investigation without step-by-step direction. How reliably they do that still depends on the model and the task, so I’m wary of treating every demo as evidence that anyone can now hack anything.
+
+Whether the requests come from people or agents, the application must reject unauthorized access. OWASP’s [**authorization guidance calls for permission checks on every request**](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html), including checks that the caller can act on the particular records involved. Knowing who’s logged in doesn’t tell us which workspaces they’re allowed to export.
+
+***Permissions for our own agents***
+
+Things get a little more complicated when we connect agents to our internal systems. Deployment tickets might contain instructions claiming that production changes have already been approved, and agents reading those tickets may accept the claims. If their credentials permit the changes too, we’ve effectively given people who write tickets a way to perform operations they don’t have permission to carry out themselves.
+
+OWASP describes this kind of [**indirect prompt injection through external content**](https://genai.owasp.org/llmrisk/llm01-prompt-injection/). Labelling ticket contents as untrusted helps communicate the boundary to models, but we still require deployment services to enforce it. Otherwise, we’re relying on models to reject instructions that their credentials allow them to carry out.
+
+Calling the right function doesn’t settle the permissions question either. Even when agents hold broader credentials, the authorization checks in `update_service` must restrict changes to the services and environments permitted for the task. Otherwise, we’ve chosen the right operation but left it with more access than the work requires.
+
+***Concurrent requests and retries***
+
+Say two requests each ask to start eight compute jobs in a workspace with ten slots available. If both check capacity before either reserves it, they’ll both pass, and we’ve now approved sixteen jobs against ten slots.
+
+Preventing that requires checking and reserving capacity atomically, whether we’re dealing with legitimate workloads or deliberate abuse. Retries require the same care, because a timeout doesn’t tell us whether the jobs actually started. Before retrying, we must check which operations already succeeded so we don’t start them twice.
+
+If we approve changes for staging, the approval must not also permit those changes in production. The same applies when agents submit different builds after review, because we haven’t approved those builds just by approving earlier ones. [**Execution requires the same details that were reviewed and approved**](https://cheatsheetseries.owasp.org/cheatsheets/Transaction_Authorization_Cheat_Sheet.html).
+
+I’m comfortable using models to help interpret suspicious requests, especially when the relevant information is buried in ticket contents, but enforcing those assessments requires controls outside the models. We’re asking quite a lot of them if we also expect them to compensate for services that permit the wrong actions.
+
+***Practical checklist***
+
+With all of that said, here’s a practical checklist. It reflects the stacks vibe-coding tools tend to use, including Next.js and Supabase, and the kinds of checks people come to me for in technical due diligence.
+
+- [ ] **1. Next.js header bypasses.** Check your deployed version against security advisories and enforce authorization in server handlers too. The [**2025 middleware bypass**](https://vercel.com/blog/postmortem-on-next-js-middleware-bypass) is one concrete example. Using Next.js doesn’t automatically make an app vulnerable.
+
+- [ ] **2. Exposed Git directory.** Confirm that `.git` and repository files aren’t publicly served. Rotate any exposed secrets, since deleting the files won’t invalidate credentials someone already copied.
+
+- [ ] **3. Supabase storage permissions.** Check whether public buckets are intentionally public. Test private-file access using separate accounts and review [**Storage RLS policies**](https://supabase.com/docs/guides/storage/security/access-control). Service-role keys must stay out of browser code.
+
+- [ ] **4. Browser-supplied prices.** Calculate prices and discounts on the server. Changing browser requests must not let customers decide what they pay.
+
+- [ ] **5. Credential stuffing.** Add login throttling and monitoring for repeated attempts. Support MFA and use stronger authentication where the account risk warrants it.
+
+- [ ] **6. Open database access.** Verify that unauthenticated callers can’t read or modify private data. Check database permissions and API policies separately from whether the app has a login screen.
+
+- [ ] **7. Polyfill.io and third-party scripts.** Audit externally loaded JavaScript, including old `polyfill.io` references. Remove unnecessary scripts and check who controls the code visitors execute. [**Cloudflare explains the supply-chain concern**](https://blog.cloudflare.com/polyfill-io-now-available-on-cdnjs-reduce-your-supply-chain-risk/).
+
+- [ ] **8. SMS pumping.** Limit verification-message requests and restrict destinations where practical. Enable provider fraud controls and spending alerts, then confirm what actually stops delivery when limits are reached. [**Twilio documents SMS fraud prevention**](https://www.twilio.com/docs/verify/preventing-toll-fraud).
+
+- [ ] **9. Prompt injection.** If the app uses models, test hostile instructions in retrieved content as well as direct messages. Check whether those instructions can cause unauthorized tool actions, rather than only checking how the models respond.
+
+- [ ] **10. Weak JWT secrets.** For HMAC-signed tokens, use securely generated high-entropy secrets. Verify signatures and restrict accepted algorithms, along with checking expiry and the expected issuer and audience. [**RFC 8725 covers JWT security practices**](https://www.rfc-editor.org/rfc/rfc8725).
+
+- [ ] **11. Race conditions.** Submit concurrent requests against shared resource quotas or one-time entitlements. Enforce limits atomically so individually valid requests can’t collectively exceed them.
+
+- [ ] **12. Account pre-hijacking.** Test registrations using email addresses the registrants don’t control. Require ownership verification before granting access or linking accounts, and check that recovery doesn’t leave attackers’ sessions active. [**Researchers have documented these account-creation failures**](https://www.microsoft.com/en-us/research/publication/pre-hijacked-accounts-an-empirical-study-of-security-failures-in-user-account-creation-on-the-web/).
+
+- [ ] **13. Subdomain takeover.** Find DNS records pointing to deleted hosting resources. Remove dangling records before releasing resources other people may be able to claim. [**OWASP explains the takeover conditions**](https://cheatsheetseries.owasp.org/cheatsheets/Subdomain_Takeover_Prevention_Cheat_Sheet.html).
+
+- [ ] **14. Server-side request forgery.** Restrict destinations when servers fetch supplied URLs. Check resolved addresses and redirects so public URLs can’t lead to private services or cloud metadata.
+
+- [ ] **15. Path traversal.** Verify that caller-supplied file paths can’t escape allowed directories, including through encoded input or symlinks. Prefer server-side mappings from authorized file IDs to paths. [**OWASP describes path traversal prevention**](https://cheatsheetseries.owasp.org/cheatsheets/Path_Traversal_Prevention_Cheat_Sheet.html).
+
+- [ ] **16. Password-reset poisoning.** Build reset links from configured trusted origins, rather than unchecked Host or forwarded-host headers. Use expiring, single-use reset tokens. [**OWASP’s recovery guidance covers this**](https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html).
+
+- [ ] **17. Source maps.** Inspect what deployed maps reveal and decide whether they should be public. Remove sensitive material from builds and rotate exposed secrets. Public source maps alone don’t establish an exploitable vulnerability.
+
+- [ ] **18. Clickjacking.** Check that untrusted sites can’t embed sensitive pages and disguise what people click. Set appropriate CSP `frame-ancestors` response headers; `X-Frame-Options` can provide legacy protection. [**OWASP explains frame-based clickjacking defences**](https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html).
+
+- [ ] **19. Open redirects.** Validate redirect destinations against explicitly permitted routes or origins. Return URL parameters must not send users to arbitrary attacker-controlled sites. [**OWASP covers redirect validation**](https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html).
+
+- [ ] **20. User enumeration.** Compare login and recovery responses for existing and nonexistent accounts. Keep messages and status codes consistent, and avoid meaningful timing differences that reveal which accounts exist. [**OWASP’s authentication guidance covers these disclosures**](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html).
+
+***If you’re adding agents to the app***
+
+- [ ] **Scope tool credentials.** Read-only workflows must not inherit write access. Establish users and tenants from trusted application context rather than model-supplied claims.
+
+- [ ] **Bind approvals to the actual actions.** Changes to amounts or targets must invalidate prior approvals. Check authorization again when queued work executes.
+
+- [ ] **Make retries safe.** Simulate timeouts after actions succeed and confirm that retrying the same operations can’t create duplicate effects.
+
+- [ ] **Bound agent activity.** Enforce tool-call limits and spending budgets outside the models, including when several runs execute concurrently.
+
+- [ ] **Verify results and test revocation.** Record what the underlying systems actually changed. Confirm that disabling agents’ access also prevents their queued actions from executing.

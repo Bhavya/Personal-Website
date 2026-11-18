@@ -29,9 +29,13 @@ I want my articles to sound like an intelligent person working through an idea w
 - Don't begin sentences with conjunctions such as "And", "But" or "So". Connect those thoughts to the preceding sentence instead.
 - Generally avoid starting a sentence with "That". Name the subject or connect the thought to the preceding sentence.
 - Avoid "move", "moves", "sits" and "lands". Use a verb that says what actually happens.
+- Avoid “interesting” in article prose and descriptions. It makes me sound like a passive third-party observer when I work in this industry and these issues are pertinent to my work. Write from that involvement: explain what the developments change about the work or the decisions involved. Convey this through specific analysis, without adding a credentials paragraph or inventing experiences.
 - Vary sentence length naturally. I generally prefer flowing sentences and developed paragraphs over a succession of short, emphatic statements.
+- Avoid repeatedly announcing possibilities with generic subjects followed by “can,” such as “Resource limits can fail” or “Tool names can hide.” Start with the concrete action or mechanism, and vary clause order so conditions and consequences follow naturally.
+- State established requirements confidently. Prefer “requires” or “must” to vague “needs” or unnecessary hedging. Preserve genuine uncertainty and factual qualifications; stronger prose must not inflate the claim.
 - Avoid excessive one-sentence paragraphs.
 - Use contractions where they sound natural.
+- Keep explanatory body paragraphs conversational, as though discussing the mechanisms with another engineer. Natural qualifications such as “generally speaking” and occasional interjections belong where they reflect the thought; do not add them mechanically. Preserve the technical precision, and keep practical checklists direct.
 - Avoid “I would” and “I’d” in article prose. State the opinion or preference directly.
 - Preserve conversational asides and qualifications when they add something to the writing.
 - Don't polish away distinctive or slightly unusual phrasing purely to make the prose more conventional.
@@ -169,3 +173,7 @@ These existing website conventions remain in effect alongside the guide above:
 - Link to sources close to the claim they support.
 - Preserve existing dates, slugs, tags, images and source URLs when editing unless the requested change requires otherwise.
 - When urgency is relevant to the argument, ground it in real consequences or constraints. Do not manufacture deadlines or alarm merely to make an opinion stronger.
+
+## Article commit history
+
+Keep each article’s publication and subsequent editorial updates together in one commit. Fold revisions into the original article commit rather than leaving separate editorial commits in the public branch history. Bhavya authorizes history rewrites and force-pushes for this purpose. Use force-with-lease against the freshly inspected branch head, preserve unrelated work and article publication dates, and verify the final repository contents and live article/RSS after publishing. If unrelated commits follow the article commit, preserve their changes when rebuilding the affected history. Do not rewrite other articles’ history as part of an individual article update unless requested.
