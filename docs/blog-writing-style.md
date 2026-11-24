@@ -128,6 +128,10 @@ For articles about technology, business, politics, media or current events:
 
 I want the analysis to be interesting because it's thoughtful and well supported, not because it makes exaggerated claims.
 
+## Current topic selection
+
+As of November 23, 2026, pause basic engineering-management advice in recurring article selection. Prioritize substantive technology and business analysis or other subjects from Bhavya’s broader interests until she revisits this preference.
+
 ## Titles
 
 Choose a title that reflects the actual substance of the article while giving someone a reason to read it.
